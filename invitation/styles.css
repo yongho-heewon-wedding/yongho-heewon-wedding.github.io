@@ -18,8 +18,9 @@ img{display:block;max-width:100%;height:auto}
 
 /* Invitation copy */
 .invitation-copy{max-width:680px;margin:0 auto 16px;text-align:center;line-height:1.7}
-.family{display:flex;flex-direction:row;justify-content:center;gap:8px;flex-wrap:wrap;color:#333}
-.family .dot{opacity:.4}
+.family{color:#333;max-width:680px;margin:24px auto 0;text-align:center}
+.family-line{margin:6px 0;font-size:18px;line-height:1.6}
+.family strong{font-weight:700}
 
 /* Calendar */
 .calendar{max-width:360px;margin:0 auto;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
@@ -45,10 +46,16 @@ img{display:block;max-width:100%;height:auto}
 .carousel .item{flex:0 0 auto;width:72%;max-width:420px;scroll-snap-align:center;border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
 
 /* Footer */
-.footer{position:sticky;bottom:0;left:0;right:0;background:rgba(255,255,255,.92);backdrop-filter:saturate(180%) blur(8px);display:flex;justify-content:space-around;align-items:center;padding:10px 0;border-top:1px solid var(--border)}
-.fab{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:0;color:var(--text)}
-.fab .icon{font-size:20px}
-.fab .label{font-size:12px}
+/* Bottom actions placed at the end of the page */
+.bottom-actions{position:static;display:flex;justify-content:center;gap:20px;margin:28px 0 40px}
+.fab{width:64px;height:64px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;border:1px solid var(--border);box-shadow:var(--shadow);color:var(--text)}
+.fab .icon{font-size:22px}
+.fab .label{font-size:12px;margin-top:6px;color:#333}
+
+/* Bottom emblem image */
+.bottom-emblem{display:flex;flex-direction:column;align-items:center;justify-content:center;margin:24px 0 48px}
+.bottom-emblem img{width:20%;max-width:140px;height:auto;object-fit:contain}
+.bottom-emblem .copyright{width:100%;text-align:center;margin-top:8px;color:var(--muted);font-size:11px}
 
 /* Modal */
 .modal{position:fixed;inset:0;display:none}

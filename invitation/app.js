@@ -2,33 +2,6 @@
   const headerDir = './pictures/header/';
   const galleryDir = './pictures/gallery/';
 
-  // Load header main image: pick the single file in header directory
-  async function findSingleHeaderImage() {
-    // GitHub Pages cannot list directory contents at runtime; assume file named main_image.* or fallback to first known extension
-    const candidates = ['main_image.jpg','main_image.jpeg','main_image.png','main_image.webp'];
-    for (const name of candidates) {
-      const url = headerDir + name;
-      const exists = await urlExists(url);
-      if (exists) return url;
-    }
-    // Fallback: try to use exact path without extension as user noted
-    const noExt = headerDir + 'main_image';
-    const fallbackExts = ['.jpg','.jpeg','.png','.webp'];
-    for (const ext of fallbackExts) {
-      const url = noExt + ext;
-      if (await urlExists(url)) return url;
-    }
-    // As last resort, use the first image shipped in repo previewed by build
-    return headerDir + 'AU1_0651-2.jpg';
-  }
-
-  async function urlExists(url){
-    try {
-      const res = await fetch(url, { method: 'HEAD' });
-      return res.ok;
-    } catch { return false; }
-  }
-
   function setHeroImage(src){
     const img = document.getElementById('heroImage');
     if (!img) return;
@@ -83,27 +56,8 @@
   // Map: open Naver map via deep link; placeholder box in page
   function setupMap(){
     const mapLink = document.getElementById('naverMapLink');
-    const placeName = 'H스퀘어 웨딩홀 (한양대학교 동문회관 6층)';
-    const lat = 37.5575; // approximate for Hanyang Univ Alumni Hall
-    const lng = 127.045; 
-    const webUrl = `https://map.naver.com/v5/search/${encodeURIComponent(placeName)}`;
-    // App deep link (may vary by device); web fallback
-    const appUrl = `nmap://search?query=${encodeURIComponent(placeName)}&appname=${encodeURIComponent(location.host)}`;
-    if (mapLink){
-      mapLink.href = webUrl;
-      mapLink.addEventListener('click', function(e){
-        // try app link first
-        const ua = navigator.userAgent || '';
-        const isIOS = /iPad|iPhone|iPod/.test(ua);
-        const isAndroid = /Android/.test(ua);
-        if (isIOS || isAndroid) {
-          e.preventDefault();
-          const timeout = setTimeout(()=>{ location.href = webUrl; }, 800);
-          location.href = appUrl;
-          // If app opens, the page will background and timeout irrelevant
-        }
-      });
-    }
+    const webUrl = 'https://naver.me/GgW8fTWQ';
+    if (mapLink){ mapLink.href = webUrl; }
     // Optional: static image via Naver Static Map API would require key; skip
   }
 
@@ -111,34 +65,31 @@
   async function buildGallery(){
     const wrap = document.getElementById('carousel');
     if (!wrap) return;
-    // Static list: since runtime directory listing isn't possible, try common names 1..30
-    const exts = ['.jpg','.jpeg','.png','.webp'];
-    const items = [];
-    for (let i=1;i<=50;i++){
-      for (const ext of exts){
-        const name = i.toString().padStart(2,'0') + ext;
-        const url = galleryDir + name;
-        if (await urlExists(url)) { items.push(url); break; }
-      }
-    }
-    // Fallback: include any known repo samples
-    if (items.length === 0){
-      const candidates = ['AU1_0237-2.jpg','AU1_0305-2.jpg'];
-      for (const c of candidates){
-        const url = galleryDir + c;
-        if (await urlExists(url)) items.push(url);
-      }
-    }
-    for (const src of items){
-      const a = document.createElement('div');
-      a.className = 'item';
+    // Load zero-padded jpgs sequentially (01.jpg, 02.jpg, ...) until first missing file
+    for (let i=1;;i++){
+      const name = i.toString().padStart(2,'0') + '.jpg';
+      const src = galleryDir + name;
+      const exists = await imageExists(src);
+      if (!exists) break;
+      const item = document.createElement('div');
+      item.className = 'item';
       const img = new Image();
-      img.src = src;
       img.loading = 'lazy';
       img.decoding = 'async';
-      a.appendChild(img);
-      wrap.appendChild(a);
+      img.src = src;
+      item.appendChild(img);
+      wrap.appendChild(item);
     }
+  }
+
+  function imageExists(src){
+    return new Promise((resolve)=>{
+      const probe = new Image();
+      probe.onload = () => resolve(true);
+      probe.onerror = () => resolve(false);
+      // cache-bust in case of aggressive caching during local dev
+      probe.src = src + '?v=' + Date.now();
+    });
   }
 
   // Footer modals
@@ -155,6 +106,8 @@
     document.getElementById('shareBtn')?.addEventListener('click', ()=> openModal('shareModal'));
     document.getElementById('giftBtn')?.addEventListener('click', ()=> openModal('giftModal'));
   }
+
+  // Bottom actions are static at the end of the page now; no scroll logic needed
 
   function openModal(id){
     const m = document.getElementById(id);
@@ -178,7 +131,7 @@
       { label: '신랑 어머니', name: '이특재', phone: '010-0000-0000' },
       { label: '신부 아버지', name: '배우철', phone: '010-0000-0000' },
       { label: '신부 어머니', name: '이은영', phone: '010-0000-0000' },
-      { label: '웨딩홀', name: 'H스퀘어 웨딩홀', phone: '02-000-0000' }
+      { label: '', name: 'H스퀘어웨딩홀', phone: '02-000-0000' }
     ];
     for (const c of contacts){
       const li = document.createElement('li');
@@ -240,7 +193,8 @@
 
   // bootstrap
   window.addEventListener('DOMContentLoaded', async ()=>{
-    setHeroImage(await findSingleHeaderImage());
+    // Directly set expected hero image path per project convention
+    setHeroImage(headerDir + 'main_image.jpg');
     renderCalendar();
     setupMap();
     buildGallery();
@@ -248,6 +202,7 @@
     renderContacts();
     renderAccounts();
     setupShare();
+    // bottom actions are static; nothing to init
   });
 })();
 

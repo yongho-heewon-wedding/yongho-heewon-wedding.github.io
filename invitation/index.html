@@ -23,7 +23,7 @@
 
       <!-- Invitation copy -->
       <section class="section" id="invitation">
-        <h2 class="section-title">INVITATION</h2>
+        <h1 class="section-title">INVITATION</h1>
         <div class="invitation-copy">
           <p>평생 함께할 따뜻한 사랑을 만났습니다.</p>
           <p>사랑을 세상과 나누는 부부가 될 것을 약속합니다.</p>
@@ -31,25 +31,22 @@
           <p>귀한 걸음으로 함께해 주신다면 더없는 기쁨이 될 것 입니다.</p>
         </div>
         <div class="family">
-          <p>송재진 · 이특재의 차남</p>
-          <p>송용호</p>
-          <p class="dot">·</p>
-          <p>배우철 · 이은영의 차녀</p>
-          <p>배희원</p>
+          <p class="family-line"><strong>송재진</strong> · <strong>이특재</strong>의 차남 <strong>송용호</strong></p>
+          <p class="family-line"><strong>배우철</strong> · <strong>이은영</strong>의 차녀 <strong>배희원</strong></p>
         </div>
       </section>
 
       <!-- Date with mini calendar -->
       <section class="section" id="date">
-        <h2 class="section-title">DATE</h2>
+        <h1 class="section-title">DATE</h1>
         <p class="section-lead">2026년 1월 31일 토요일 오전 11시</p>
         <div class="calendar" id="calendar" aria-label="결혼식 날짜 캘린더"></div>
       </section>
 
       <!-- Location with map and directions -->
       <section class="section" id="location">
-        <h2 class="section-title">LOCATION</h2>
-        <p class="section-lead">H스퀘어 웨딩홀 (한양대학교 동문회관 6층)</p>
+        <h1 class="section-title">LOCATION</h1>
+        <p class="section-lead">H스퀘어웨딩홀 (한양대학교 동문회관 6층)</p>
         <div class="map-wrap">
           <!-- Naver Map placeholder; JS will embed or deep-link -->
           <div id="naverMap" class="map" role="region" aria-label="네이버 지도"></div>
@@ -78,21 +75,27 @@
       </section>
     </main>
 
-    <!-- Footer actions -->
-    <footer class="footer" id="footer">
-      <button class="fab" id="callBtn" aria-haspopup="dialog" aria-controls="callModal">
+    <!-- Bottom actions (shown only when scrolled to bottom) -->
+    <div class="bottom-actions" id="bottomActions" aria-label="빠른 동작">
+      <button class="fab" id="callBtn" aria-label="전화" aria-haspopup="dialog" aria-controls="callModal">
         <span class="icon">📞</span>
         <span class="label">전화</span>
       </button>
-      <button class="fab" id="shareBtn" aria-haspopup="dialog" aria-controls="shareModal">
+      <button class="fab" id="shareBtn" aria-label="공유" aria-haspopup="dialog" aria-controls="shareModal">
         <span class="icon">🔗</span>
         <span class="label">공유</span>
       </button>
-      <button class="fab" id="giftBtn" aria-haspopup="dialog" aria-controls="giftModal">
+      <button class="fab" id="giftBtn" aria-label="축의" aria-haspopup="dialog" aria-controls="giftModal">
         <span class="icon">💝</span>
         <span class="label">축의</span>
       </button>
-    </footer>
+    </div>
+
+    <!-- Bottom emblem image -->
+    <div class="bottom-emblem">
+      <img src="./pictures/bottom/bae_song.jpeg" alt="배 · 송 마크" />
+      <p class="copyright">©BaeSong. All rights reserved.</p>
+    </div>
 
     <!-- Modals -->
     <div class="modal" id="callModal" aria-hidden="true" role="dialog" aria-modal="true">
