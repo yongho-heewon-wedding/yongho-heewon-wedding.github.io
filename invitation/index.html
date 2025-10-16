@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>INVITATION</title>
+    <meta name="description" content="모바일 청첩장">
+    <link rel="preload" as="image" href="./pictures/header/main_image" imagesrcset="">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main id="app">
+      <!-- Header full-bleed image -->
+      <section class="hero" id="hero" aria-label="메인 이미지">
+        <img id="heroImage" alt="웨딩 메인 이미지" />
+        <div class="hero-caption">
+          <div class="date-place">
+            <p class="date">2026년 1월 31일 토요일 오전 11시</p>
+            <p class="place">H스퀘어 웨딩홀 (한양대학교 동문회관 6층)</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Invitation copy -->
+      <section class="section" id="invitation">
+        <h2 class="section-title">INVITATION</h2>
+        <div class="invitation-copy">
+          <p>평생 함께할 따뜻한 사랑을 만났습니다.</p>
+          <p>사랑을 세상과 나누는 부부가 될 것을 약속합니다.</p>
+          <p>끝까지 믿음으로 사랑할 것을 약속하는 자리에 소중한 분들을 초대합니다.</p>
+          <p>귀한 걸음으로 함께해 주신다면 더없는 기쁨이 될 것 입니다.</p>
+        </div>
+        <div class="family">
+          <p>송재진 · 이특재의 차남</p>
+          <p>송용호</p>
+          <p class="dot">·</p>
+          <p>배우철 · 이은영의 차녀</p>
+          <p>배희원</p>
+        </div>
+      </section>
+
+      <!-- Date with mini calendar -->
+      <section class="section" id="date">
+        <h2 class="section-title">DATE</h2>
+        <p class="section-lead">2026년 1월 31일 토요일 오전 11시</p>
+        <div class="calendar" id="calendar" aria-label="결혼식 날짜 캘린더"></div>
+      </section>
+
+      <!-- Location with map and directions -->
+      <section class="section" id="location">
+        <h2 class="section-title">LOCATION</h2>
+        <p class="section-lead">H스퀘어 웨딩홀 (한양대학교 동문회관 6층)</p>
+        <div class="map-wrap">
+          <!-- Naver Map placeholder; JS will embed or deep-link -->
+          <div id="naverMap" class="map" role="region" aria-label="네이버 지도"></div>
+          <div class="map-actions">
+            <a id="naverMapLink" class="btn btn-outline" href="#" target="_blank" rel="noopener">네이버 지도 열기</a>
+          </div>
+        </div>
+        <h3 class="sub-title">오시는길</h3>
+        <div class="directions">
+          <h4>지하철</h4>
+          <p>2호선 한양대역 1번 출구 (도보 5분 거리)</p>
+          <p>5호선 왕십리역 6번 출구 (도보 8분 거리)</p>
+          <h4>버스</h4>
+          <p>지선(초록) : 2012, 2013, 2014, 2220, 2222, 2411, 2016</p>
+          <p>간선(파랑) : 263, 302, 371</p>
+          <h4>주차 안내</h4>
+          <p>건물 내 지하 주차창, 건물 앞 야외주차장, 한양대학병원 주차장 이용 가능 (1시간 30분 무료)</p>
+          <p class="note">*시간 초과 시 미리 구입한 주차권을 마련해두었으니 꼭 받아가세요.</p>
+        </div>
+      </section>
+
+      <!-- Gallery -->
+      <section class="section" id="gallery">
+        <h2 class="section-title">GALLERY</h2>
+        <div class="carousel" id="carousel" aria-label="사진 갤러리"></div>
+      </section>
+    </main>
+
+    <!-- Footer actions -->
+    <footer class="footer" id="footer">
+      <button class="fab" id="callBtn" aria-haspopup="dialog" aria-controls="callModal">
+        <span class="icon">📞</span>
+        <span class="label">전화</span>
+      </button>
+      <button class="fab" id="shareBtn" aria-haspopup="dialog" aria-controls="shareModal">
+        <span class="icon">🔗</span>
+        <span class="label">공유</span>
+      </button>
+      <button class="fab" id="giftBtn" aria-haspopup="dialog" aria-controls="giftModal">
+        <span class="icon">💝</span>
+        <span class="label">축의</span>
+      </button>
+    </footer>
+
+    <!-- Modals -->
+    <div class="modal" id="callModal" aria-hidden="true" role="dialog" aria-modal="true">
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-dialog" role="document">
+        <button class="modal-close" data-close aria-label="닫기">✕</button>
+        <h3>연락처</h3>
+        <ul class="contact-list" id="contactList"></ul>
+      </div>
+    </div>
+
+    <div class="modal" id="shareModal" aria-hidden="true" role="dialog" aria-modal="true">
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-dialog" role="document">
+        <button class="modal-close" data-close aria-label="닫기">✕</button>
+        <h3>공유</h3>
+        <div class="share-actions">
+          <button class="btn" id="copyLinkBtn">링크 복사</button>
+          <button class="btn" id="kakaoShareBtn">카카오톡 공유</button>
+        </div>
+        <p class="muted">카카오 SDK 연동이 필요합니다.</p>
+      </div>
+    </div>
+
+    <div class="modal" id="giftModal" aria-hidden="true" role="dialog" aria-modal="true">
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-dialog" role="document">
+        <button class="modal-close" data-close aria-label="닫기">✕</button>
+        <h3>축의</h3>
+        <p class="center">직접 축하를 전하지 못하는 분들을 위해<br>부득이하게 계좌번호를 기재하게 되었습니다.<br>넓은 마음으로 양해 부탁드립니다.</p>
+        <ul class="account-list" id="accountList"></ul>
+      </div>
+    </div>
+
+    <script src="./app.js" defer></script>
+  </body>
+  </html>
+
+
