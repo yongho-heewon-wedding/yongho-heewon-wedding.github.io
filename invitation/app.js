@@ -53,17 +53,64 @@
     }
   }
 
-  // Map: open Naver map via deep link; placeholder box in page
+  // Map: show location image with click to open Naver map
   function setupMap(){
-    const mapLink = document.getElementById('naverMapLink');
-    const webUrl = 'https://naver.me/GgW8fTWQ';
-    if (mapLink){ mapLink.href = webUrl; }
-    // Optional: static image via Naver Static Map API would require key; skip
+    const mapContainer = document.getElementById('naverMap');
+    const naverMapLink = document.getElementById('naverMapLink');
+    const kakaoMapLink = document.getElementById('kakaoMapLink');
+    const naverUrl = 'https://naver.me/GgW8fTWQ';
+    const kakaoUrl = 'https://place.map.kakao.com/10931903';
+    
+    if (naverMapLink){ 
+      naverMapLink.href = naverUrl; 
+    }
+    
+    if (kakaoMapLink){ 
+      kakaoMapLink.href = kakaoUrl; 
+    }
+    
+    if (mapContainer) {
+      // Create location image
+      const mapImage = document.createElement('img');
+      mapImage.src = './pictures/location.png';
+      mapImage.alt = 'H스퀘어웨딩홀 위치';
+      mapImage.style.width = '100%';
+      mapImage.style.height = '100%';
+      mapImage.style.objectFit = 'contain';
+      mapImage.style.cursor = 'pointer';
+      
+      // Add click handler to open Naver map
+      mapImage.addEventListener('click', () => {
+        window.open(naverUrl, '_blank');
+      });
+      
+      // Add loading placeholder
+      mapContainer.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; background: transparent; color: #666; font-size: 14px;">위치 이미지를 불러오는 중...</div>';
+      
+      // Load map image
+      mapImage.onload = () => {
+        mapContainer.innerHTML = '';
+        mapContainer.appendChild(mapImage);
+      };
+      
+      mapImage.onerror = () => {
+        // Fallback: show placeholder with click to open map
+        mapContainer.innerHTML = `
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; background: transparent; color: #666; cursor: pointer;" onclick="window.open('${naverUrl}', '_blank')">
+            <div style="font-size: 24px; margin-bottom: 8px;">📍</div>
+            <div style="font-size: 14px; text-align: center;">
+              <div>H스퀘어웨딩홀</div>
+              <div style="font-size: 12px; margin-top: 4px;">지도를 보려면 클릭하세요</div>
+            </div>
+          </div>
+        `;
+      };
+    }
   }
 
   // Build gallery by probing existing images in gallery directory
   async function buildGallery(){
-    const wrap = document.getElementById('carousel');
+    const wrap = document.getElementById('galleryContainer');
     if (!wrap) return;
     // Load zero-padded jpgs sequentially (01.jpg, 02.jpg, ...) until first missing file
     for (let i=1;;i++){
@@ -77,6 +124,7 @@
       img.loading = 'lazy';
       img.decoding = 'async';
       img.src = src;
+      img.alt = `갤러리 이미지 ${i}`;
       item.appendChild(img);
       wrap.appendChild(item);
     }
