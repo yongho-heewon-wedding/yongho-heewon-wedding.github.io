@@ -1,6 +1,6 @@
 :root{--bg:#ffffff;--text:#222;--muted:#666;--accent:#0a7cff;--border:#eee;--shadow:0 6px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Pretendard Regular',-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
 img{display:block;max-width:100%;height:auto}
 .section{padding:32px 20px}
 .section-title{font-size:20px;letter-spacing:.24em;text-indent:.24em;text-align:center;margin:0 auto 16px;font-weight:600;border-top:2px solid rgb(87,138,57);border-bottom:2px solid rgb(87,138,57);padding:8px 0;color:rgb(87,138,57);display:block;width:fit-content;max-width:60%}
@@ -10,10 +10,9 @@ img{display:block;max-width:100%;height:auto}
 .sub-title{font-size:20px;font-weight:600;margin:24px auto 16px;color:rgb(87,138,57);text-align:center;border-top:2px solid rgb(87,138,57);border-bottom:2px solid rgb(87,138,57);padding:8px 0;display:block;width:fit-content;max-width:60%;margin-left:auto;margin-right:auto}
 
 /* Hero */
-.hero{position:relative}
+.hero{position:relative;margin-top:0;padding-top:0}
 .hero img{width:100%;height:100vh;object-fit:cover}
-.hero-caption{position:absolute;left:0;right:0;bottom:50px;background:transparent;color:#fff;padding:24px 16px}
-.date-place{max-width:720px;margin:0 auto;text-align:center}
+.date-place{max-width:720px;margin:24px auto;text-align:center;color:rgb(87,138,57)}
 .date-place .date{margin:0 0 4px;font-size:19px;font-weight:600}
 .date-place .place{margin:0;font-size:18px;opacity:.95}
 
@@ -73,7 +72,87 @@ img{display:block;max-width:100%;height:auto}
 .account-actions .btn{padding:6px 10px;font-size:12px}
 
 @media (min-width:768px){
+  /* PC에서 전체 컨테이너를 모바일처럼 좁게 제한 */
+  body {
+    max-width: 500px;
+    margin: 0 auto;
+    background: #f5f5f5;
+  }
+  
+  #app {
+    background: var(--bg);
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    min-height: 100vh;
+  }
+  
   .hero img{height:92vh}
+  
+  /* PC에서도 모바일처럼 좁은 패딩 유지 */
+  .section {
+    padding: 32px 20px;
+  }
+  
+  /* 갤러리도 PC에서 좁게 유지 */
+  .gallery {
+    max-width: 520px;
+    padding: 0 16px;
+  }
+  
+  /* PC에서도 모바일처럼 좁은 최대 너비 유지 */
+  .date-place {
+    max-width: 520px;
+  }
+  
+  .invitation-copy {
+    max-width: 520px;
+  }
+  
+  .family {
+    max-width: 520px;
+  }
+  
+  .map-wrap {
+    max-width: 520px;
+  }
+  
+  .calendar-image {
+    max-width: 250px;
+  }
+  
+  /* 모달도 PC에서 좁게 유지 */
+  .modal-dialog {
+    max-width: 520px;
+  }
+  
+  /* bottom images와 bottom emblem은 배경색 제거 */
+  .bottom-images {
+    background: var(--bg);
+  }
+  
+  .bottom-emblem {
+    background: var(--bg);
+  }
+  
+  /* 갤러리와 모달도 흰색 배경 설정 */
+  .gallery {
+    background: var(--bg);
+  }
+  
+  .modal-dialog {
+    background: var(--bg);
+  }
+  
+  /* 모달 backdrop 배경 투명하게 */
+  .modal-backdrop {
+    background: rgba(0,0,0,.3);
+  }
+  
+  /* bottom-actions 버튼들도 흰색 배경 설정 */
+  .bottom-actions {
+    background: var(--bg);
+    padding: 20px 0;
+    margin: 0;
+  }
 }
 
 
