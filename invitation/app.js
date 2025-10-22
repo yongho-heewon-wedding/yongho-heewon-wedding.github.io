@@ -10,48 +10,6 @@
     img.loading = 'eager';
   }
 
-  // Render mini calendar for Jan 2026 with circle on 31st
-  function renderCalendar(){
-    const root = document.getElementById('calendar');
-    if (!root) return;
-    const year = 2026, monthIndex = 0; // January
-    const selectedDay = 31;
-    const dow = ['일','월','화','수','목','금','토'];
-
-    const head = document.createElement('div');
-    head.className = 'cal-head';
-    head.innerHTML = '<strong>2026년 1월</strong>';
-    root.appendChild(head);
-
-    const grid = document.createElement('div');
-    grid.className = 'grid';
-    root.appendChild(grid);
-
-    // DOW header
-    for (let i=0;i<7;i++){
-      const c = document.createElement('div');
-      c.className = 'cell dow';
-      c.textContent = dow[i];
-      grid.appendChild(c);
-    }
-
-    const first = new Date(year, monthIndex, 1).getDay();
-    const daysInMonth = new Date(year, monthIndex+1, 0).getDate();
-    const totalCells = Math.ceil((first + daysInMonth) / 7) * 7;
-
-    for (let i=0;i<totalCells;i++){
-      const dayNum = i - first + 1;
-      const cell = document.createElement('div');
-      cell.className = 'cell day';
-      if (dayNum > 0 && dayNum <= daysInMonth) {
-        cell.textContent = String(dayNum);
-        if (dayNum === selectedDay) cell.classList.add('selected');
-      } else {
-        cell.textContent = '';
-      }
-      grid.appendChild(cell);
-    }
-  }
 
   // Map: show location image with click to open Naver map
   function setupMap(){
@@ -242,8 +200,7 @@
   // bootstrap
   window.addEventListener('DOMContentLoaded', async ()=>{
     // Directly set expected hero image path per project convention
-    setHeroImage(headerDir + 'main_image.jpg');
-    renderCalendar();
+    setHeroImage(headerDir + 'main_image.png?v=' + Date.now());
     setupMap();
     buildGallery();
     setupModals();

@@ -2,7 +2,7 @@
 <html lang="ko">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <title>송용호♥배희원 결혼합니다.</title>
     <meta name="description" content="2026년 01월 31일 토요일 오전 11시">
     
@@ -18,7 +18,7 @@
     <meta property="twitter:description" content="2026년 01월 31일 토요일 오전 11시">
     <meta property="twitter:image" content="./pictures/bottom/bae_song.jpeg">
     
-    <link rel="preload" as="image" href="./pictures/header/main_image" imagesrcset="">
+    <link rel="preload" as="image" href="./pictures/header/main_image.png" imagesrcset="">
     <link rel="stylesheet" href="./styles.css">
   </head>
   <body>
@@ -54,7 +54,9 @@
       <section class="section" id="date">
         <h1 class="section-title">DATE</h1>
         <p class="section-lead"><strong>2026년 1월 31일 토요일 오전 11시</strong></p>
-        <div class="calendar" id="calendar" aria-label="결혼식 날짜 캘린더"></div>
+        <div class="calendar-image">
+          <img src="./pictures/calendar.jpg" alt="결혼식 날짜 캘린더" />
+        </div>
       </section>
 
       <!-- Location with map and directions -->
@@ -93,6 +95,12 @@
         <div class="gallery" id="galleryContainer" aria-label="사진 갤러리"></div>
       </section>
     </main>
+
+    <!-- Bottom images -->
+    <div class="bottom-images">
+      <img src="./pictures/qna.png" alt="Q&A" class="qna-image" />
+      <img src="./pictures/thanks.png" alt="감사 인사" class="thanks-image" />
+    </div>
 
     <!-- Bottom actions (shown only when scrolled to bottom) -->
     <div class="bottom-actions" id="bottomActions" aria-label="빠른 동작">

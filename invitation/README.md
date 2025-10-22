@@ -4,7 +4,7 @@
 - 루트 `/index.html`에서 `/invitation/`로 자동 리다이렉트됩니다.
 
 2) 이미지 경로
-- 메인 이미지: `invitation/pictures/header/main_image.jpg` (파일명 그대로 사용 권장)
+- 메인 이미지: `invitation/pictures/header/main_image.png` (파일명 그대로 사용 권장)
 - 갤러리 이미지: `invitation/pictures/gallery/` 폴더에 `01.jpg, 02.jpg ...`처럼 작은 숫자부터 큰 숫자 순으로 배치 권장
 
 3) 연락처/계좌 수정
