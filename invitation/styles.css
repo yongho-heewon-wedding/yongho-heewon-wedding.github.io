@@ -10,8 +10,8 @@ img{display:block;max-width:100%;height:auto}
 .sub-title{font-size:20px;font-weight:600;margin:24px auto 16px;color:rgb(87,138,57);text-align:center;border-top:2px solid rgb(87,138,57);border-bottom:2px solid rgb(87,138,57);padding:8px 0;display:block;width:fit-content;max-width:60%;margin-left:auto;margin-right:auto}
 
 /* Hero */
-.hero{position:relative;margin-top:0;padding-top:0}
-.hero img{width:100%;height:100vh;object-fit:cover}
+.hero{position:relative;margin-top:0;padding-top:0;display:flex;align-items:center;justify-content:center;background:#f8f8f8}
+.hero img{width:100%;height:100vh;object-fit:contain;object-position:center}
 .date-place{max-width:720px;margin:24px auto;text-align:center;color:rgb(87,138,57)}
 .date-place .date{margin:0 0 4px;font-size:19px;font-weight:600}
 .date-place .place{margin:0;font-size:18px;opacity:.95}
@@ -62,6 +62,17 @@ img{display:block;max-width:100%;height:auto}
 
 /* Mobile responsive adjustments */
 @media (max-width: 480px) {
+  /* Hero 이미지 모바일 최적화 */
+  .hero {
+    background: #f8f8f8;
+  }
+  
+  .hero img {
+    height: 100vh;
+    object-fit: contain;
+    object-position: center;
+  }
+  
   .gallery {
     gap: 6px;
     padding: 0 12px;
@@ -113,6 +124,19 @@ img{display:block;max-width:100%;height:auto}
 .contact-list a{color:var(--accent);text-decoration:none}
 .account-actions{display:flex;gap:8px}
 .account-actions .btn{padding:6px 10px;font-size:12px}
+
+/* 태블릿 크기에서의 Hero 이미지 최적화 */
+@media (min-width: 481px) and (max-width: 767px) {
+  .hero {
+    background: #f8f8f8;
+  }
+  
+  .hero img {
+    height: 100vh;
+    object-fit: contain;
+    object-position: center;
+  }
+}
 
 @media (min-width:768px){
   /* PC에서 전체 컨테이너를 모바일처럼 좁게 제한 */
