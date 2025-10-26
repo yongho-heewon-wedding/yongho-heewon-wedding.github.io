@@ -70,6 +70,13 @@
   let galleryImages = [];
   let currentImageIndex = 0;
   let showAllImages = false;
+  
+  // Touch swipe state
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchEndX = 0;
+  let touchEndY = 0;
+  let isSwipeGesture = false;
 
   // Build gallery by probing existing images in gallery directory
   async function buildGallery(){
@@ -164,6 +171,50 @@
     if (lightboxCounter) lightboxCounter.textContent = `${currentImageIndex + 1} / ${galleryImages.length}`;
   }
 
+  // Touch swipe functions
+  function handleTouchStart(e) {
+    if (!e.touches || e.touches.length !== 1) return;
+    
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    isSwipeGesture = false;
+  }
+
+  function handleTouchMove(e) {
+    if (!e.touches || e.touches.length !== 1) return;
+    
+    touchEndX = e.touches[0].clientX;
+    touchEndY = e.touches[0].clientY;
+    
+    const deltaX = Math.abs(touchEndX - touchStartX);
+    const deltaY = Math.abs(touchEndY - touchStartY);
+    
+    // 수평 스와이프가 수직 스와이프보다 클 때만 스와이프 제스처로 인식
+    if (deltaX > deltaY && deltaX > 10) {
+      isSwipeGesture = true;
+      e.preventDefault(); // 스크롤 방지
+    }
+  }
+
+  function handleTouchEnd(e) {
+    if (!isSwipeGesture) return;
+    
+    const deltaX = touchEndX - touchStartX;
+    const minSwipeDistance = 50; // 최소 스와이프 거리
+    
+    if (Math.abs(deltaX) > minSwipeDistance) {
+      if (deltaX > 0) {
+        // 오른쪽으로 스와이프 - 이전 이미지
+        showPrevImage();
+      } else {
+        // 왼쪽으로 스와이프 - 다음 이미지
+        showNextImage();
+      }
+    }
+    
+    isSwipeGesture = false;
+  }
+
   // Setup lightbox event listeners
   function setupLightbox(){
     const lightbox = document.getElementById('lightbox');
@@ -180,6 +231,11 @@
       lightbox.addEventListener('click', (e) => {
         if (e.target === lightbox) closeLightbox();
       });
+      
+      // Touch swipe events for mobile
+      lightbox.addEventListener('touchstart', handleTouchStart, { passive: false });
+      lightbox.addEventListener('touchmove', handleTouchMove, { passive: false });
+      lightbox.addEventListener('touchend', handleTouchEnd, { passive: false });
     }
     
     // Keyboard navigation
