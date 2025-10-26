@@ -66,26 +66,138 @@
     }
   }
 
+  // Gallery state
+  let galleryImages = [];
+  let currentImageIndex = 0;
+  let showAllImages = false;
+
   // Build gallery by probing existing images in gallery directory
   async function buildGallery(){
     const wrap = document.getElementById('galleryContainer');
+    const moreButton = document.getElementById('moreButton');
     if (!wrap) return;
+    
     // Load zero-padded jpgs sequentially (01.jpg, 02.jpg, ...) until first missing file
     for (let i=1;;i++){
       const name = i.toString().padStart(2,'0') + '.jpg';
       const src = galleryDir + name;
       const exists = await imageExists(src);
       if (!exists) break;
+      
+      galleryImages.push(src);
+      
       const item = document.createElement('div');
       item.className = 'item';
+      if (i > 9) item.classList.add('hidden');
+      
       const img = new Image();
       img.loading = 'lazy';
       img.decoding = 'async';
       img.src = src;
       img.alt = `갤러리 이미지 ${i}`;
+      
+      // Add click handler for lightbox
+      item.addEventListener('click', () => openLightbox(i - 1));
+      
       item.appendChild(img);
       wrap.appendChild(item);
     }
+    
+    // Show more button if there are more than 9 images
+    if (galleryImages.length > 9 && moreButton) {
+      moreButton.style.display = 'block';
+      moreButton.addEventListener('click', showAllGalleryImages);
+    }
+  }
+
+  // Show all gallery images
+  function showAllGalleryImages(){
+    const items = document.querySelectorAll('.gallery .item');
+    items.forEach(item => item.classList.remove('hidden'));
+    
+    const moreButton = document.getElementById('moreButton');
+    if (moreButton) {
+      moreButton.style.display = 'none';
+    }
+    
+    showAllImages = true;
+  }
+
+  // Lightbox functions
+  function openLightbox(index){
+    currentImageIndex = index;
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImage = document.getElementById('lightboxImage');
+    const lightboxCounter = document.getElementById('lightboxCounter');
+    
+    if (!lightbox || !lightboxImage) return;
+    
+    lightboxImage.src = galleryImages[index];
+    lightboxCounter.textContent = `${index + 1} / ${galleryImages.length}`;
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox(){
+    const lightbox = document.getElementById('lightbox');
+    if (lightbox) {
+      lightbox.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  }
+
+  function showNextImage(){
+    currentImageIndex = (currentImageIndex + 1) % galleryImages.length;
+    const lightboxImage = document.getElementById('lightboxImage');
+    const lightboxCounter = document.getElementById('lightboxCounter');
+    
+    if (lightboxImage) lightboxImage.src = galleryImages[currentImageIndex];
+    if (lightboxCounter) lightboxCounter.textContent = `${currentImageIndex + 1} / ${galleryImages.length}`;
+  }
+
+  function showPrevImage(){
+    currentImageIndex = currentImageIndex === 0 ? galleryImages.length - 1 : currentImageIndex - 1;
+    const lightboxImage = document.getElementById('lightboxImage');
+    const lightboxCounter = document.getElementById('lightboxCounter');
+    
+    if (lightboxImage) lightboxImage.src = galleryImages[currentImageIndex];
+    if (lightboxCounter) lightboxCounter.textContent = `${currentImageIndex + 1} / ${galleryImages.length}`;
+  }
+
+  // Setup lightbox event listeners
+  function setupLightbox(){
+    const lightbox = document.getElementById('lightbox');
+    const lightboxClose = document.getElementById('lightboxClose');
+    const lightboxPrev = document.getElementById('lightboxPrev');
+    const lightboxNext = document.getElementById('lightboxNext');
+    
+    if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+    if (lightboxPrev) lightboxPrev.addEventListener('click', showPrevImage);
+    if (lightboxNext) lightboxNext.addEventListener('click', showNextImage);
+    
+    // Close on backdrop click
+    if (lightbox) {
+      lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) closeLightbox();
+      });
+    }
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (!lightbox.classList.contains('active')) return;
+      
+      switch(e.key) {
+        case 'Escape':
+          closeLightbox();
+          break;
+        case 'ArrowLeft':
+          showPrevImage();
+          break;
+        case 'ArrowRight':
+          showNextImage();
+          break;
+      }
+    });
   }
 
   function imageExists(src){
@@ -204,6 +316,7 @@
     setupMap();
     buildGallery();
     setupModals();
+    setupLightbox();
     renderContacts();
     renderAccounts();
     setupShare();

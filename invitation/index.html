@@ -10,13 +10,13 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="송용호♥배희원 결혼합니다.">
     <meta property="og:description" content="2026년 01월 31일 토요일 오전 11시">
-    <meta property="og:image" content="./pictures/bottom/bae_song.jpeg">
+    <meta property="og:image" content="./pictures/thumbnail/welcome.png">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:title" content="송용호♥배희원 결혼합니다.">
     <meta property="twitter:description" content="2026년 01월 31일 토요일 오전 11시">
-    <meta property="twitter:image" content="./pictures/bottom/bae_song.jpeg">
+    <meta property="twitter:image" content="./pictures/thumbnail/welcome.png">
     
     <link rel="preload" as="image" href="./pictures/header/main_image.png" imagesrcset="">
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -58,7 +58,7 @@
         <h1 class="section-title">DATE</h1>
         <p class="section-lead"><strong>2026년 1월 31일 토요일 오전 11시</strong></p>
         <div class="calendar-image">
-          <img src="./pictures/calendar.jpg" alt="결혼식 날짜 캘린더" />
+          <img src="./pictures/calendar.png" alt="결혼식 날짜 캘린더" />
         </div>
       </section>
 
@@ -75,6 +75,9 @@
             </a>
             <a id="kakaoMapLink" class="map-logo-btn" href="https://place.map.kakao.com/10931903" target="_blank" rel="noopener">
               <img src="./pictures/maplogo/kakao_map.png" alt="카카오 지도">
+            </a>
+            <a id="tmapLink" class="map-logo-btn" href="https://tmap.life/689ad79a" target="_blank" rel="noopener">
+              <img src="./pictures/maplogo/t_map.png" alt="티맵">
             </a>
           </div>
         </div>
@@ -99,6 +102,7 @@
       <section class="section" id="gallery">
         <h2 class="section-title">GALLERY</h2>
         <div class="gallery" id="galleryContainer" aria-label="사진 갤러리"></div>
+        <button class="more-button" id="moreButton" style="display:none;">더보기</button>
       </section>
     </main>
 
@@ -160,6 +164,17 @@
         <h3>축의</h3>
         <p class="center">직접 축하를 전하지 못하는 분들을 위해<br>부득이하게 계좌번호를 기재하게 되었습니다.<br>넓은 마음으로 양해 부탁드립니다.</p>
         <ul class="account-list" id="accountList"></ul>
+      </div>
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div class="lightbox" id="lightbox">
+      <div class="lightbox-content">
+        <button class="lightbox-close" id="lightboxClose">✕</button>
+        <button class="lightbox-nav lightbox-prev" id="lightboxPrev">‹</button>
+        <img id="lightboxImage" alt="갤러리 이미지">
+        <button class="lightbox-nav lightbox-next" id="lightboxNext">›</button>
+        <div class="lightbox-counter" id="lightboxCounter"></div>
       </div>
     </div>
 
