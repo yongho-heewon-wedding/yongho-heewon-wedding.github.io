@@ -70,6 +70,7 @@
   let galleryImages = [];
   let currentImageIndex = 0;
   let showAllImages = false;
+  let galleryPreloaded = false; // 갤러리 미리 로딩 상태
   
   // Touch swipe state
   let touchStartX = 0;
@@ -78,43 +79,80 @@
   let touchEndY = 0;
   let isSwipeGesture = false;
 
-  // Build gallery by probing existing images in gallery directory
-  async function buildGallery(){
-    const wrap = document.getElementById('galleryContainer');
-    const moreButton = document.getElementById('moreButton');
-    if (!wrap) return;
+  // Preload gallery images
+  async function preloadGalleryImages() {
+    if (galleryPreloaded) return;
+    
+    const galleryContainer = document.getElementById('galleryContainer');
+    if (!galleryContainer) return;
+    
+    // Show loading placeholder
+    galleryContainer.innerHTML = '<div class="gallery-loading">사진을 불러오는 중...</div>';
+    
+    const loadedImages = [];
     
     // Load zero-padded jpgs sequentially (01.jpg, 02.jpg, ...) until first missing file
-    for (let i=1;;i++){
-      const name = i.toString().padStart(2,'0') + '.jpg';
+    for (let i = 1;; i++) {
+      const name = i.toString().padStart(2, '0') + '.jpg';
       const src = galleryDir + name;
       const exists = await imageExists(src);
       if (!exists) break;
       
       galleryImages.push(src);
       
-      const item = document.createElement('div');
-      item.className = 'item';
-      if (i > 9) item.classList.add('hidden');
-      
+      // Create image element and preload
       const img = new Image();
-      img.loading = 'lazy';
+      img.loading = 'eager'; // 즉시 로딩
       img.decoding = 'async';
       img.src = src;
       img.alt = `갤러리 이미지 ${i}`;
       
-      // Add click handler for lightbox
-      item.addEventListener('click', () => openLightbox(i - 1));
+      // Promise로 로딩 완료 대기
+      const loadPromise = new Promise((resolve) => {
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+      });
       
-      item.appendChild(img);
-      wrap.appendChild(item);
+      loadedImages.push(loadPromise);
     }
     
+    // 모든 이미지 로딩 완료 대기
+    const images = await Promise.all(loadedImages);
+    
+    // 갤러리 컨테이너 초기화
+    galleryContainer.innerHTML = '';
+    
+    // 로딩된 이미지들을 DOM에 추가 (숨김 상태)
+    images.forEach((img, index) => {
+      if (img) {
+        const item = document.createElement('div');
+        item.className = 'item';
+        if (index >= 9) item.classList.add('hidden');
+        
+        // Add click handler for lightbox
+        item.addEventListener('click', () => openLightbox(index));
+        
+        item.appendChild(img);
+        galleryContainer.appendChild(item);
+      }
+    });
+    
+    galleryPreloaded = true;
+    
     // Show more button if there are more than 9 images
+    const moreButton = document.getElementById('moreButton');
     if (galleryImages.length > 9 && moreButton) {
       moreButton.style.display = 'block';
       moreButton.addEventListener('click', showAllGalleryImages);
     }
+  }
+
+  // Build gallery by probing existing images in gallery directory
+  async function buildGallery(){
+    // 이미 미리 로딩된 경우 스킵
+    if (galleryPreloaded) return;
+    
+    await preloadGalleryImages();
   }
 
   // Show all gallery images
@@ -322,13 +360,34 @@
   function renderAccounts(){
     const list = document.getElementById('accountList');
     if (!list) return;
-    const accounts = [
+    
+    // 신랑측 계좌 정보
+    const groomAccounts = [
       { owner: '신랑 송용호', bank: '국민은행', number: '000000-00-000000' },
-      { owner: '신부 배희원', bank: '신한은행', number: '000-000-000000' },
-      { owner: '신랑 부모님', bank: '하나은행', number: '000-000000-00000' },
-      { owner: '신부 부모님', bank: '우리은행', number: '0000-000-000000' }
+      { owner: '신랑 아버지 송재진', bank: '하나은행', number: '000-000000-00000' },
+      { owner: '신랑 어머니 이특재', bank: '신한은행', number: '000-000-000000' }
     ];
-    for (const a of accounts){
+    
+    // 신부측 계좌 정보
+    const brideAccounts = [
+      { owner: '신부 배희원', bank: '우리은행', number: '0000-000-000000' },
+      { owner: '신부 아버지 배우철', bank: '국민은행', number: '000000-00-000000' },
+      { owner: '신부 어머니 이은영', bank: '하나은행', number: '000-000000-00000' }
+    ];
+    
+    // 신랑측 섹션
+    const groomSection = document.createElement('div');
+    groomSection.className = 'account-section';
+    
+    const groomTitle = document.createElement('h4');
+    groomTitle.textContent = '신랑측';
+    groomTitle.className = 'account-section-title';
+    groomSection.appendChild(groomTitle);
+    
+    const groomList = document.createElement('ul');
+    groomList.className = 'account-sub-list';
+    
+    for (const a of groomAccounts){
       const li = document.createElement('li');
       const span = document.createElement('span');
       span.textContent = `${a.owner} · ${a.bank} ${a.number}`;
@@ -337,11 +396,44 @@
       const copyBtn = document.createElement('button');
       copyBtn.className = 'btn btn-outline';
       copyBtn.textContent = '복사';
-      copyBtn.addEventListener('click', ()=> copyToClipboard(`${a.bank} ${a.number}`));
+      copyBtn.addEventListener('click', ()=> copyToClipboard(a.number));
       actions.appendChild(copyBtn);
       li.appendChild(span); li.appendChild(actions);
-      list.appendChild(li);
+      groomList.appendChild(li);
     }
+    
+    groomSection.appendChild(groomList);
+    list.appendChild(groomSection);
+    
+    // 신부측 섹션
+    const brideSection = document.createElement('div');
+    brideSection.className = 'account-section';
+    
+    const brideTitle = document.createElement('h4');
+    brideTitle.textContent = '신부측';
+    brideTitle.className = 'account-section-title';
+    brideSection.appendChild(brideTitle);
+    
+    const brideList = document.createElement('ul');
+    brideList.className = 'account-sub-list';
+    
+    for (const a of brideAccounts){
+      const li = document.createElement('li');
+      const span = document.createElement('span');
+      span.textContent = `${a.owner} · ${a.bank} ${a.number}`;
+      const actions = document.createElement('div');
+      actions.className = 'account-actions';
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'btn btn-outline';
+      copyBtn.textContent = '복사';
+      copyBtn.addEventListener('click', ()=> copyToClipboard(a.number));
+      actions.appendChild(copyBtn);
+      li.appendChild(span); li.appendChild(actions);
+      brideList.appendChild(li);
+    }
+    
+    brideSection.appendChild(brideList);
+    list.appendChild(brideSection);
   }
 
   function setupShare(){
@@ -356,12 +448,119 @@
   async function copyToClipboard(text){
     try {
       await navigator.clipboard.writeText(text);
-      alert('복사되었습니다.');
+      showToast('복사되었습니다.');
     } catch {
       const ta = document.createElement('textarea');
       ta.value = text; document.body.appendChild(ta); ta.select();
       document.execCommand('copy'); document.body.removeChild(ta);
-      alert('복사되었습니다.');
+      showToast('복사되었습니다.');
+    }
+  }
+
+  function showToast(message) {
+    // 기존 토스트가 있다면 제거
+    const existingToast = document.querySelector('.toast');
+    if (existingToast) {
+      existingToast.remove();
+    }
+
+    // 토스트 요소 생성
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    
+    // DOM에 추가
+    document.body.appendChild(toast);
+    
+    // 애니메이션을 위해 약간의 지연 후 표시
+    setTimeout(() => {
+      toast.classList.add('show');
+    }, 10);
+    
+    // 2초 후 제거
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.parentNode.removeChild(toast);
+        }
+      }, 300);
+    }, 2000);
+  }
+
+  // Scroll Animation
+  function setupScrollAnimation() {
+    const animatedElements = document.querySelectorAll('.scroll-animate');
+    
+    // 사용자가 애니메이션 감소를 선호하는지 확인
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    
+    if (prefersReducedMotion) {
+      // 애니메이션 감소를 선호하는 경우 모든 요소를 즉시 표시
+      animatedElements.forEach(element => {
+        element.classList.add('animate');
+      });
+      // 갤러리도 미리 로딩하고 즉시 표시
+      preloadGalleryImages().then(() => {
+        const galleryItems = document.querySelectorAll('.gallery .item');
+        galleryItems.forEach(item => {
+          item.classList.add('animate');
+        });
+      });
+      return;
+    }
+    
+    // Intersection Observer for scroll animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate');
+          
+          // 갤러리 섹션에 도달했을 때 미리 로딩된 이미지들 표시
+          if (entry.target.id === 'gallery') {
+            preloadGalleryImages().then(() => {
+              const galleryItems = document.querySelectorAll('.gallery .item');
+              galleryItems.forEach((item, index) => {
+                setTimeout(() => {
+                  item.classList.add('animate');
+                }, index * 100); // 100ms delay between each item
+              });
+            });
+          }
+          
+          // 애니메이션 완료 후 관찰 중단 (성능 최적화)
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+    
+    // Observe all animated elements
+    animatedElements.forEach(element => {
+      observer.observe(element);
+    });
+    
+    // 갤러리 섹션이 뷰포트에 들어오기 전에 미리 로딩 시작
+    const gallerySection = document.getElementById('gallery');
+    if (gallerySection) {
+      const preloadObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && !galleryPreloaded) {
+            // 갤러리 섹션이 뷰포트에 들어오기 시작하면 미리 로딩
+            preloadGalleryImages();
+            preloadObserver.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0,
+        rootMargin: '200px 0px 0px 0px' // 갤러리 섹션보다 200px 위에서 미리 로딩 시작
+      });
+      
+      preloadObserver.observe(gallerySection);
     }
   }
 
@@ -370,12 +569,13 @@
     // Directly set expected hero image path per project convention
     setHeroImage(headerDir + 'main_image.png?v=' + Date.now());
     setupMap();
-    buildGallery();
+    // buildGallery()는 스크롤 애니메이션에서 처리하므로 여기서는 제거
     setupModals();
     setupLightbox();
     renderContacts();
     renderAccounts();
     setupShare();
+    setupScrollAnimation();
     // bottom actions are static; nothing to init
   });
 })();
