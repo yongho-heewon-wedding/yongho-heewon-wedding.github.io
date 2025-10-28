@@ -1,6 +1,11 @@
 (function(){
   const headerDir = './pictures/header/';
   const galleryDir = './pictures/gallery/';
+  const galleryManifest = [
+    '01.jpg','02.jpg','03.jpg','04.jpg','05.jpg',
+    '06.jpg','07.jpg','08.jpg','09.jpg','10.jpg',
+    '11.jpg','12.jpg','13.jpg','14.jpg','15.jpg'
+  ];
 
   function setHeroImage(src){
     const img = document.getElementById('heroImage');
@@ -71,6 +76,7 @@
   let currentImageIndex = 0;
   let showAllImages = false;
   let galleryPreloaded = false; // 갤러리 미리 로딩 상태
+  let galleryPreloadPromise = null; // 중복 호출 방지용 단일 플라이트
   
   // Touch swipe state
   let touchStartX = 0;
@@ -79,72 +85,52 @@
   let touchEndY = 0;
   let isSwipeGesture = false;
 
-  // Preload gallery images
+  // Preload/build gallery from static manifest (single-flight, no 중복 요청)
   async function preloadGalleryImages() {
     if (galleryPreloaded) return;
-    
-    const galleryContainer = document.getElementById('galleryContainer');
-    if (!galleryContainer) return;
-    
-    // Show loading placeholder
-    galleryContainer.innerHTML = '<div class="gallery-loading">사진을 불러오는 중...</div>';
-    
-    const loadedImages = [];
-    
-    // Load zero-padded jpgs sequentially (01.jpg, 02.jpg, ...) until first missing file
-    for (let i = 1;; i++) {
-      const name = i.toString().padStart(2, '0') + '.jpg';
-      const src = galleryDir + name;
-      const exists = await imageExists(src);
-      if (!exists) break;
-      
-      galleryImages.push(src);
-      
-      // Create image element and preload
-      const img = new Image();
-      img.loading = 'eager'; // 즉시 로딩
-      img.decoding = 'async';
-      img.src = src;
-      img.alt = `갤러리 이미지 ${i}`;
-      
-      // Promise로 로딩 완료 대기
-      const loadPromise = new Promise((resolve) => {
-        img.onload = () => resolve(img);
-        img.onerror = () => resolve(null);
-      });
-      
-      loadedImages.push(loadPromise);
-    }
-    
-    // 모든 이미지 로딩 완료 대기
-    const images = await Promise.all(loadedImages);
-    
-    // 갤러리 컨테이너 초기화
-    galleryContainer.innerHTML = '';
-    
-    // 로딩된 이미지들을 DOM에 추가 (숨김 상태)
-    images.forEach((img, index) => {
-      if (img) {
+    if (galleryPreloadPromise) { await galleryPreloadPromise; return; }
+
+    const runPreload = async () => {
+      const galleryContainer = document.getElementById('galleryContainer');
+      if (!galleryContainer) return;
+
+      // Show loading placeholder
+      galleryContainer.innerHTML = '<div class="gallery-loading">사진을 불러오는 중...</div>';
+
+      // Build from manifest without any probing
+      galleryImages = galleryManifest.map(name => galleryDir + name);
+
+      // 갤러리 컨테이너 초기화
+      galleryContainer.innerHTML = '';
+
+      // 이미지 DOM 생성 (처음 9장만 표시), 이미지 자체는 lazy 로딩
+      galleryImages.forEach((src, index) => {
+        const img = new Image();
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        img.src = src;
+        img.alt = `갤러리 이미지 ${index + 1}`;
         const item = document.createElement('div');
         item.className = 'item';
         if (index >= 9) item.classList.add('hidden');
-        
-        // Add click handler for lightbox
         item.addEventListener('click', () => openLightbox(index));
-        
         item.appendChild(img);
         galleryContainer.appendChild(item);
+      });
+
+      galleryPreloaded = true;
+
+      // Show more button if there are more than 9 images
+      const moreButton = document.getElementById('moreButton');
+      if (galleryImages.length > 9 && moreButton) {
+        moreButton.style.display = 'block';
+        moreButton.addEventListener('click', showAllGalleryImages, { once: true });
       }
-    });
-    
-    galleryPreloaded = true;
-    
-    // Show more button if there are more than 9 images
-    const moreButton = document.getElementById('moreButton');
-    if (galleryImages.length > 9 && moreButton) {
-      moreButton.style.display = 'block';
-      moreButton.addEventListener('click', showAllGalleryImages);
-    }
+    };
+
+    galleryPreloadPromise = runPreload();
+    await galleryPreloadPromise;
+    galleryPreloadPromise = null;
   }
 
   // Build gallery by probing existing images in gallery directory
@@ -294,15 +280,8 @@
     });
   }
 
-  function imageExists(src){
-    return new Promise((resolve)=>{
-      const probe = new Image();
-      probe.onload = () => resolve(true);
-      probe.onerror = () => resolve(false);
-      // cache-bust in case of aggressive caching during local dev
-      probe.src = src + '?v=' + Date.now();
-    });
-  }
+  // 더 이상 별도 존재 확인이 필요 없음 (정적 매니페스트 사용)
+  function imageExists(){}
 
   // Footer modals
   function setupModals(){
