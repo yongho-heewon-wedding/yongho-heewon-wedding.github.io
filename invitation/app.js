@@ -133,6 +133,17 @@
     galleryPreloadPromise = null;
   }
 
+  // 갤러리 이미지를 화면에 붙이지 않고 네트워크/디코딩 캐시만 미리 데우기
+  function warmCacheGalleryImages(){
+    // DOM 생성 프리로드가 이미 진행/완료 중이면 중복 프리로드 불필요
+    if (galleryPreloadPromise || galleryPreloaded) return;
+    galleryManifest.forEach(name => {
+      const img = new Image();
+      img.decoding = 'async';
+      img.src = galleryDir + name;
+    });
+  }
+
   // Build gallery by probing existing images in gallery directory
   async function buildGallery(){
     // 이미 미리 로딩된 경우 스킵
@@ -555,6 +566,8 @@
     renderAccounts();
     setupShare();
     setupScrollAnimation();
+    // 갤러리 이미지를 미리 내려받아 캐시만 데워두기 (표시는 스크롤 시점에 수행)
+    warmCacheGalleryImages();
     // bottom actions are static; nothing to init
   });
 })();
