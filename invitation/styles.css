@@ -21,6 +21,7 @@ img{display:block;max-width:100%;height:auto}
 
 /* Invitation copy */
 .invitation-copy{max-width:680px;margin:0 auto 16px;text-align:center;line-height:1.7}
+.invitation-copy .compact{margin-top:-15px}
 .family{color:#333;max-width:680px;margin:24px auto 0;text-align:center}
 .family-line{margin:6px 0;font-size:18px;line-height:1.6}
 .family strong{font-weight:700}
