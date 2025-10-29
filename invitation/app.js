@@ -2,9 +2,8 @@
   const headerDir = './pictures/header/';
   const galleryDir = './pictures/gallery/';
   const galleryManifest = [
-    '01.jpg','02.jpg','03.jpg','04.jpg','05.jpg',
-    '06.jpg','07.jpg','08.jpg','09.jpg','10.jpg',
-    '11.jpg','12.jpg','13.jpg','14.jpg','15.jpg'
+  '01.jpg','02.jpg','03.jpg','04.jpg','05.jpg',
+  '06.jpg','07.jpg','08.jpg','09.jpg','10.jpg','11.jpg','12.jpg'
   ];
 
   function setHeroImage(src){
@@ -103,7 +102,7 @@
       // 갤러리 컨테이너 초기화
       galleryContainer.innerHTML = '';
 
-      // 이미지 DOM 생성 (처음 9장만 표시), 이미지 자체는 lazy 로딩
+      // 이미지 DOM 생성 (모든 이미지 표시), 이미지 자체는 lazy 로딩
       galleryImages.forEach((src, index) => {
         const img = new Image();
         img.loading = 'lazy';
@@ -112,7 +111,6 @@
         img.alt = `갤러리 이미지 ${index + 1}`;
         const item = document.createElement('div');
         item.className = 'item';
-        if (index >= 9) item.classList.add('hidden');
         item.addEventListener('click', () => openLightbox(index));
         item.appendChild(img);
         galleryContainer.appendChild(item);
@@ -120,12 +118,14 @@
 
       galleryPreloaded = true;
 
-      // Show more button if there are more than 9 images
-      const moreButton = document.getElementById('moreButton');
-      if (galleryImages.length > 9 && moreButton) {
-        moreButton.style.display = 'block';
-        moreButton.addEventListener('click', showAllGalleryImages, { once: true });
-      }
+      // 즉시 모두 보이도록 애니메이션 클래스 부여 (스크롤 관찰과 무관하게 12개 전부 노출)
+      const galleryItems = document.querySelectorAll('.gallery .item');
+      galleryItems.forEach((item, index) => {
+        setTimeout(() => {
+          item.classList.add('animate');
+        }, index * 80);
+      });
+      // 더보기 버튼 사용 안 함
     };
 
     galleryPreloadPromise = runPreload();

@@ -4,13 +4,13 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:
 img{display:block;max-width:100%;height:auto}
 .section{padding:32px 20px}
 #invitation{padding-top:0}
-.section-title{font-size:18px;letter-spacing:.24em;text-indent:.24em;text-align:center;margin:0 auto 16px;font-weight:600;border-top:none;border-bottom:none;padding:8px 0;color:rgb(87,138,57);display:block;width:fit-content;max-width:60%}
-.section-lead{text-align:center;margin:8px auto;font-size:18px}
+.section-title{font-size:17px;letter-spacing:.24em;text-indent:.24em;text-align:center;margin:0 auto 16px;font-weight:400;border-top:none;border-bottom:none;padding:8px 0;color:rgb(87,138,57);display:block;width:fit-content;max-width:60%}
+.section-lead{text-align:center;margin:8px auto;font-size:17px}
 .date-place scroll-animate{margin:0 0 16px;text-align:center}
 .center{text-align:center}
 .muted{color:var(--muted);font-size:12px}
-.sub-title{font-size:20px;font-weight:600;margin:24px auto 16px;color:rgb(87,138,57);text-align:center;border-top:none;border-bottom:none;padding:8px 0;display:block;width:fit-content;max-width:60%;margin-left:auto;margin-right:auto}
-.directions h4{font-size:18px;font-weight:600;margin:16px 0 8px;color:#000}
+.sub-title{font-size:17px;font-weight:400;margin:24px auto 16px;color:rgb(87,138,57);text-align:center;border-top:none;border-bottom:none;padding:8px 0;display:block;width:fit-content;max-width:60%;margin-left:auto;margin-right:auto}
+.directions h4{font-size:17px;font-weight:600;margin:16px 0 8px;color:#000}
 
 /* Hero */
 .hero{position:relative;margin-top:0;padding-top:0;display:flex;align-items:center;justify-content:center;background:#f0f0f0}
@@ -22,8 +22,10 @@ img{display:block;max-width:100%;height:auto}
 /* Invitation copy */
 .invitation-copy{max-width:680px;margin:0 auto 16px;text-align:center;line-height:1.7}
 .invitation-copy .compact{margin-top:-15px}
+/* Tighten spacing for address lines under LOCATION */
+p.invitation-copy{margin:4px 0;text-align:center}
 .family{color:#333;max-width:680px;margin:24px auto 0;text-align:center}
-.family-line{margin:6px 0;font-size:18px;line-height:1.6}
+.family-line{margin:6px 0;font-size:17px;line-height:1.6}
 .family strong{font-weight:700}
 
 /* Calendar Image */
