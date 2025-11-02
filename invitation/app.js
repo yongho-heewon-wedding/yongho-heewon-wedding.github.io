@@ -6,24 +6,67 @@
   '06.jpg','07.jpg','08.jpg','09.jpg','10.jpg','11.jpg','12.jpg'
   ];
 
+  // Resource loading tracker
+  // 리소스가 로드된 비율을 추적하여 로딩 스크린을 숨김
+  let resourceTracker = {
+    resources: new Map(),
+    loadedCount: 0,
+    totalCount: 0,
+    threshold: 0.85, // 85% 로드되면 숨김 (0.8 = 80%, 0.9 = 90%로 조정 가능)
+    minDisplayTime: 1000, // 최소 1초 표시 (로딩 애니메이션을 위한 최소 시간)
+    startTime: null,
+    onProgress: null
+  };
+
+  function trackResource(url, name) {
+    if (resourceTracker.resources.has(url)) return;
+    
+    resourceTracker.totalCount++;
+    resourceTracker.resources.set(url, { name, loaded: false });
+    
+    const img = new Image();
+    
+    img.onload = () => {
+      if (!resourceTracker.resources.get(url)?.loaded) {
+        resourceTracker.resources.set(url, { name, loaded: true });
+        resourceTracker.loadedCount++;
+        checkLoadingProgress();
+      }
+    };
+    img.onerror = () => {
+      // 에러가 발생해도 로드된 것으로 간주 (빠른 진행을 위해)
+      if (!resourceTracker.resources.get(url)?.loaded) {
+        resourceTracker.resources.set(url, { name, loaded: true });
+        resourceTracker.loadedCount++;
+        checkLoadingProgress();
+      }
+    };
+    
+    // src 설정 후, 이미 캐시된 이미지는 즉시 onload가 호출됨
+    img.src = url;
+  }
+
+  function checkLoadingProgress() {
+    const progress = resourceTracker.loadedCount / resourceTracker.totalCount;
+    
+    if (resourceTracker.onProgress) {
+      resourceTracker.onProgress(progress);
+    }
+    
+    // 85% 이상 로드되고, 최소 표시 시간이 지났으면 숨김
+    if (progress >= resourceTracker.threshold) {
+      const elapsed = Date.now() - resourceTracker.startTime;
+      const remainingTime = Math.max(0, resourceTracker.minDisplayTime - elapsed);
+      
+      setTimeout(() => {
+        hideLoadingScreen();
+      }, remainingTime);
+    }
+  }
+
   function setHeroImage(src){
     const img = document.getElementById('heroImage');
     if (!img) return;
-    
-    // Set event handlers before setting src to ensure they're called even if image is cached
-    img.onload = () => {
-      // 최소 1초는 보여주기 (애니메이션을 위한 시간)
-      setTimeout(() => {
-        hideLoadingScreen();
-      }, 1000);
-    };
-    
-    img.onerror = () => {
-      // Hide loading screen even if image fails to load
-      setTimeout(() => {
-        hideLoadingScreen();
-      }, 1000);
-    };
     
     img.decoding = 'async';
     img.loading = 'eager';
@@ -236,29 +279,33 @@
       // 갤러리 컨테이너 초기화
       galleryContainer.innerHTML = '';
 
-      // 이미지 DOM 생성 (모든 이미지 표시), 이미지 자체는 lazy 로딩
-      galleryImages.forEach((src, index) => {
-        const img = new Image();
-        img.loading = 'lazy';
-        img.decoding = 'async';
-        img.src = src;
-        img.alt = `갤러리 이미지 ${index + 1}`;
-        const item = document.createElement('div');
-        item.className = 'item';
-        item.addEventListener('click', () => openLightbox(index));
-        item.appendChild(img);
-        galleryContainer.appendChild(item);
+      // 모든 이미지가 로드될 때까지 Promise 배열 생성
+      const imageLoadPromises = galleryImages.map((src, index) => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.loading = 'eager'; // lazy 대신 eager로 변경하여 즉시 로드
+          img.decoding = 'async';
+          img.src = src;
+          img.alt = `갤러리 이미지 ${index + 1}`;
+          
+          const item = document.createElement('div');
+          item.className = 'item';
+          item.addEventListener('click', () => openLightbox(index));
+          item.appendChild(img);
+          galleryContainer.appendChild(item);
+          
+          // 이미지 로드 완료 시 resolve
+          img.onload = () => resolve();
+          img.onerror = () => resolve(); // 에러가 발생해도 resolve (빠른 진행을 위해)
+        });
       });
+
+      // 모든 이미지가 로드될 때까지 대기
+      await Promise.all(imageLoadPromises);
 
       galleryPreloaded = true;
 
-      // 즉시 모두 보이도록 애니메이션 클래스 부여 (스크롤 관찰과 무관하게 12개 전부 노출)
-      const galleryItems = document.querySelectorAll('.gallery .item');
-      galleryItems.forEach((item, index) => {
-        setTimeout(() => {
-          item.classList.add('animate');
-        }, index * 80);
-      });
+      // 갤러리 섹션 애니메이션은 setupScrollAnimation에서 처리하므로 여기서는 처리하지 않음
       // 더보기 버튼 사용 안 함
     };
 
@@ -718,11 +765,14 @@
       animatedElements.forEach(element => {
         element.classList.add('animate');
       });
-      // 갤러리도 미리 로딩하고 즉시 표시
+      // 갤러리도 미리 로딩하고 동시에 표시
       preloadGalleryImages().then(() => {
-        const galleryItems = document.querySelectorAll('.gallery .item');
-        galleryItems.forEach(item => {
-          item.classList.add('animate');
+        // 모든 이미지가 로드된 후, 모든 갤러리 이미지를 동시에 나타나도록 함
+        requestAnimationFrame(() => {
+          const galleryItems = document.querySelectorAll('.gallery .item');
+          galleryItems.forEach(item => {
+            item.classList.add('animate');
+          });
         });
       });
       return;
@@ -742,11 +792,13 @@
           // 갤러리 섹션에 도달했을 때 미리 로딩된 이미지들 표시
           if (entry.target.id === 'gallery') {
             preloadGalleryImages().then(() => {
-              const galleryItems = document.querySelectorAll('.gallery .item');
-              galleryItems.forEach((item, index) => {
-                setTimeout(() => {
+              // 모든 이미지가 로드된 후, 모든 갤러리 이미지를 동시에 나타나도록 함
+              // requestAnimationFrame을 사용하여 한 프레임에 모두 적용
+              requestAnimationFrame(() => {
+                const galleryItems = document.querySelectorAll('.gallery .item');
+                galleryItems.forEach((item) => {
                   item.classList.add('animate');
-                }, index * 100); // 100ms delay between each item
+                });
               });
             });
           }
@@ -782,10 +834,118 @@
     }
   }
 
+  // Start tracking all resources
+  function startResourceTracking() {
+    resourceTracker.startTime = Date.now();
+    
+    // Hero 이미지
+    const heroImageSrc = headerDir + 'main_image.png';
+    trackResource(heroImageSrc, 'Hero Image');
+    
+    // 갤러리 이미지들 (12개)
+    galleryManifest.forEach(name => {
+      trackResource(galleryDir + name, `Gallery ${name}`);
+    });
+    
+    // 페이지 내 이미지들
+    trackResource('./pictures/calendar.png', 'Calendar Image');
+    trackResource('./pictures/location.png', 'Location Image');
+    trackResource('./pictures/qna.png', 'Q&A Image');
+    trackResource('./pictures/thanks.png', 'Thanks Image');
+    trackResource('./pictures/bottom/bae_song.jpeg', 'Bottom Emblem');
+    trackResource('./pictures/maplogo/naver_map.png', 'Naver Map Logo');
+    trackResource('./pictures/maplogo/kakao_map.png', 'Kakao Map Logo');
+    trackResource('./pictures/maplogo/t_map.png', 'T Map Logo');
+    
+    // CSS 파일 로딩 체크 (1개 리소스로 카운트)
+    let cssTracked = false;
+    resourceTracker.totalCount++;
+    
+    const checkCSSLoaded = () => {
+      if (cssTracked) return;
+      
+      const stylesheets = Array.from(document.styleSheets);
+      const loaded = stylesheets.some(sheet => {
+        try {
+          return sheet.cssRules || sheet.rules;
+        } catch (e) {
+          return false;
+        }
+      });
+      
+      if (loaded) {
+        cssTracked = true;
+        resourceTracker.loadedCount++;
+        checkLoadingProgress();
+        return true;
+      }
+      return false;
+    };
+    
+    // 즉시 확인
+    if (!checkCSSLoaded()) {
+      // CSS 로드 대기
+      const cssInterval = setInterval(() => {
+        if (checkCSSLoaded()) {
+          clearInterval(cssInterval);
+        }
+      }, 100);
+      
+      // 2초 후 타임아웃
+      setTimeout(() => {
+        clearInterval(cssInterval);
+        if (!cssTracked) {
+          cssTracked = true;
+          resourceTracker.loadedCount++;
+          checkLoadingProgress();
+        }
+      }, 2000);
+    }
+    
+    // 폰트 파일 로딩 체크 (1개 리소스로 카운트)
+    let fontTracked = false;
+    resourceTracker.totalCount++;
+    
+    const markFontLoaded = () => {
+      if (!fontTracked) {
+        fontTracked = true;
+        resourceTracker.loadedCount++;
+        checkLoadingProgress();
+      }
+    };
+    
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => {
+        markFontLoaded();
+      }).catch(() => {
+        markFontLoaded(); // 실패해도 완료로 간주
+      });
+      
+      // 폰트 로드 타임아웃 (3초)
+      setTimeout(() => {
+        markFontLoaded();
+      }, 3000);
+    } else {
+      // 폰트 API를 지원하지 않으면 즉시 완료
+      markFontLoaded();
+    }
+    
+    // Fallback: 최대 5초 후에도 85% 미만이면 강제로 숨김
+    setTimeout(() => {
+      const loadingScreen = document.getElementById('loadingScreen');
+      if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
+        hideLoadingScreen();
+      }
+    }, 5000);
+  }
+
   // bootstrap
   window.addEventListener('DOMContentLoaded', async ()=>{
     // Load loading SVG first
     await loadLoadingSVG();
+    
+    // 리소스 추적 시작
+    startResourceTracking();
     
     // Directly set expected hero image path per project convention
     setHeroImage(headerDir + 'main_image.png?v=' + Date.now());
@@ -801,14 +961,6 @@
     // 갤러리 이미지를 미리 내려받아 캐시만 데워두기 (표시는 스크롤 시점에 수행)
     warmCacheGalleryImages();
     // bottom actions are static; nothing to init
-    
-    // Fallback: Hide loading screen after 3 seconds if hero image doesn't load
-    setTimeout(() => {
-      const loadingScreen = document.getElementById('loadingScreen');
-      if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
-        hideLoadingScreen();
-      }
-    }, 3000);
   });
 })();
 
