@@ -353,15 +353,15 @@
     // 신랑측 계좌 정보
     const groomAccounts = [
       { owner: '신랑 송용호', bank: '하나', number: '362-890-415-89807' },
-      { owner: '신랑 아버지 송재진', bank: '하나', number: '117-18-22335-2' },
-      { owner: '신랑 어머니 이특재', bank: '국민', number: '838-240-162265' }
+      { owner: '아버지 송재진', bank: '하나', number: '117-18-22335-2' },
+      { owner: '어머니 이특재', bank: '국민', number: '838-240-162265' }
     ];
     
     // 신부측 계좌 정보
     const brideAccounts = [
-      { owner: '신부 배희원', bank: '신한', number: '110-216-799581' },
-      { owner: '신부 아버지 배우철', bank: '농협', number: '352-1660-1174-93' },
-      { owner: '신부 어머니 이은영', bank: '신한', number: '110-209-552110' }
+      { owner: '배희원', bank: '신한', number: '110-216-799581' },
+      { owner: '아버지 배우철', bank: '농협', number: '352-1660-1174-93' },
+      { owner: '어머니 이은영', bank: '신한', number: '110-209-552110' }
     ];
     
     // 신랑측 계좌 목록 렌더링
@@ -411,25 +411,79 @@
     
     if (!groomBtn || !brideBtn || !groomContent || !brideContent) return;
     
+    function setContentHeight(content, isExpanding){
+      // transition 일시 중지하고 높이 계산
+      content.style.transition = 'none';
+      
+      if (isExpanding) {
+        // 확장: 먼저 auto로 설정하여 실제 높이 계산
+        content.style.height = 'auto';
+        const height = content.scrollHeight;
+        content.style.height = '0';
+        
+        // 다음 프레임에서 애니메이션 시작
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            content.style.transition = '';
+            content.style.height = height + 'px';
+          });
+        });
+      } else {
+        // 축소: 현재 높이에서 0으로
+        const height = content.scrollHeight;
+        content.style.height = height + 'px';
+        
+        requestAnimationFrame(() => {
+          content.style.transition = '';
+          content.style.height = '0';
+        });
+      }
+    }
+    
     function toggleAccountSlide(targetBtn, targetContent, otherBtn, otherContent){
       const isExpanded = targetContent.classList.contains('expanded');
       
       // 다른 슬라이드 닫기
       if (otherContent.classList.contains('expanded')) {
-        otherContent.classList.remove('expanded');
+        // active 클래스를 먼저 제거하여 스타일이 즉시 적용되도록
         otherBtn.classList.remove('active');
         otherBtn.setAttribute('aria-expanded', 'false');
+        setContentHeight(otherContent, false);
+        otherContent.classList.remove('expanded');
+        
+        // 애니메이션 완료 후 높이 초기화
+        setTimeout(() => {
+          if (!otherContent.classList.contains('expanded')) {
+            otherContent.style.height = '';
+          }
+        }, 350);
       }
       
       // 현재 슬라이드 토글
       if (isExpanded) {
-        targetContent.classList.remove('expanded');
+        // active 클래스를 먼저 제거하여 스타일이 즉시 적용되도록
         targetBtn.classList.remove('active');
         targetBtn.setAttribute('aria-expanded', 'false');
+        setContentHeight(targetContent, false);
+        targetContent.classList.remove('expanded');
+        
+        setTimeout(() => {
+          if (!targetContent.classList.contains('expanded')) {
+            targetContent.style.height = '';
+          }
+        }, 350);
       } else {
         targetContent.classList.add('expanded');
         targetBtn.classList.add('active');
         targetBtn.setAttribute('aria-expanded', 'true');
+        setContentHeight(targetContent, true);
+        
+        // 애니메이션 완료 후 auto로 설정
+        setTimeout(() => {
+          if (targetContent.classList.contains('expanded')) {
+            targetContent.style.height = 'auto';
+          }
+        }, 350);
       }
     }
     

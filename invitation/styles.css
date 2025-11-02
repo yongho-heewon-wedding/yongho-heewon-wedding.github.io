@@ -153,14 +153,15 @@ p.invitation-copy{margin:4px 0;text-align:center}
 .account-intro{text-align:center;line-height:1.7;color:var(--muted);margin:16px auto 24px;max-width:680px;font-size:17px}
 .account-items{display:flex;flex-direction:column;gap:16px;max-width:680px;margin:24px auto}
 .account-item{width:100%}
-.account-btn{width:100%;padding:16px 20px;border:1px solid rgb(87,138,57);background:#fff;color:rgb(87,138,57);border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.3s ease;appearance:none;display:flex;align-items:center;justify-content:center;text-align:center;position:relative}
-.account-btn:hover{background:rgb(87,138,57);color:#fff}
-.account-btn.active{background:rgb(87,138,57);color:#fff}
+.account-btn{width:100%;padding:16px 20px;border:1px solid rgb(87,138,57);background:#fff !important;color:rgb(87,138,57) !important;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.3s ease;appearance:none;display:flex;align-items:center;justify-content:center;text-align:center;position:relative}
+.account-btn:not(.active):hover{background:rgb(87,138,57) !important;color:#fff !important}
+.account-btn.active{background:rgb(87,138,57) !important;color:#fff !important}
+.account-btn.active:hover{background:rgb(87,138,57) !important;color:#fff !important}
 .account-btn.active .account-btn-icon{transform:rotate(180deg)}
 .account-btn-label{text-align:center}
 .account-btn-icon{position:absolute;right:20px;flex-shrink:0;transition:transform 0.3s ease;stroke-linecap:round;stroke-linejoin:round}
-.account-slide-content{max-height:0;overflow:hidden;transition:max-height 0.4s ease-out,opacity 0.3s ease-out;opacity:0;margin-top:0}
-.account-slide-content.expanded{max-height:1000px;opacity:1;margin-top:12px;transition:max-height 0.5s ease-in,opacity 0.4s ease-in}
+.account-slide-content{height:0;overflow:hidden;transition:height 0.35s cubic-bezier(0.4, 0, 0.2, 1),opacity 0.3s ease-out;opacity:0;margin-top:0}
+.account-slide-content.expanded{opacity:1;margin-top:12px;transition:height 0.35s cubic-bezier(0.4, 0, 0.2, 1),opacity 0.3s ease-in}
 .account-slide-content .account-list{list-style:none;margin:0;padding:16px 20px;background:#fff;border:1px solid #eee;border-radius:8px}
 .account-slide-content .account-list .account-actions{flex-shrink:0}
 .account-slide-content .account-list .btn-outline{background:#fff;color:#666;border:1px solid #ccc;padding:8px 12px;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;transition:all 0.2s ease}
