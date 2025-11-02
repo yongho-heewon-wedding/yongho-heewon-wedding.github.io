@@ -1,6 +1,6 @@
 :root{--bg:#ffffff;--text:#222;--muted:#666;--accent:#0a7cff;--border:#eee;--shadow:0 6px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Gowun Dodum',sans-serif}
 img{display:block;max-width:100%;height:auto}
 .section{padding:32px 20px}
 #invitation{padding-top:48px}
@@ -391,7 +391,7 @@ p.invitation-copy{margin:4px 0;text-align:center}
 }
 
 .loading-text-svg text {
-  font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Gowun Dodum', sans-serif;
   font-size: 18px;
   font-weight: 500;
   fill: none;

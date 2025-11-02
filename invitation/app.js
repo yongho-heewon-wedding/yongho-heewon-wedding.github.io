@@ -3,7 +3,7 @@
   const galleryDir = './pictures/gallery/';
   const galleryManifest = [
   '01.jpg','02.jpg','03.jpg','04.jpg','05.jpg',
-  '06.jpg','07.jpg','08.jpg','09.jpg','10.jpg','11.jpg','12.jpg'
+  '06.jpg','07.jpg','08.jpg','09.jpg','10.jpg','11.jpg','12.jpg','13.jpg','14.jpg','15.jpg'
   ];
 
   // Resource loading tracker
@@ -294,6 +294,9 @@
           item.appendChild(img);
           galleryContainer.appendChild(item);
           
+          // 모든 이미지가 표시되도록 hidden 클래스가 없어야 함 (초기화)
+          item.classList.remove('hidden');
+          
           // 이미지 로드 완료 시 resolve
           img.onload = () => resolve();
           img.onerror = () => resolve(); // 에러가 발생해도 resolve (빠른 진행을 위해)
@@ -304,6 +307,9 @@
       await Promise.all(imageLoadPromises);
 
       galleryPreloaded = true;
+
+      // 모든 이미지가 표시되도록 확인
+      showAllGalleryImages();
 
       // 갤러리 섹션 애니메이션은 setupScrollAnimation에서 처리하므로 여기서는 처리하지 않음
       // 더보기 버튼 사용 안 함
@@ -842,7 +848,7 @@
     const heroImageSrc = headerDir + 'main_image.png';
     trackResource(heroImageSrc, 'Hero Image');
     
-    // 갤러리 이미지들 (12개)
+    // 갤러리 이미지들 (15개)
     galleryManifest.forEach(name => {
       trackResource(galleryDir + name, `Gallery ${name}`);
     });
