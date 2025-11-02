@@ -70,6 +70,11 @@
     
     img.decoding = 'async';
     img.loading = 'eager';
+    img.fetchPriority = 'high'; // 히어로 이미지는 최우선
+    // 이미지 완전 로드 후에도 메모리 유지
+    img.onload = () => {
+      img.setAttribute('data-loaded', 'true');
+    };
     img.src = src;
   }
 
@@ -211,12 +216,18 @@
     if (mapContainer) {
       // Create location image
       const mapImage = document.createElement('img');
+      mapImage.loading = 'lazy';
+      mapImage.decoding = 'async';
       mapImage.src = './pictures/location.png';
       mapImage.alt = 'H스퀘어웨딩홀 위치';
       mapImage.style.width = '100%';
       mapImage.style.height = '100%';
       mapImage.style.objectFit = 'contain';
       mapImage.style.cursor = 'pointer';
+      // 이미지 로드 완료 추적
+      mapImage.onload = () => {
+        mapImage.setAttribute('data-loaded', 'true');
+      };
       
       // Add click handler to open Naver map
       mapImage.addEventListener('click', () => {
@@ -283,28 +294,48 @@
       const imageLoadPromises = galleryImages.map((src, index) => {
         return new Promise((resolve) => {
           const img = new Image();
-          img.loading = 'eager'; // lazy 대신 eager로 변경하여 즉시 로드
+          // 성능 최적화: lazy loading 사용하여 메모리 효율성 향상
+          // 하지만 네트워크 캐시는 미리 준비되므로 빠르게 로드됨
+          img.loading = 'lazy';
           img.decoding = 'async';
+          // 이미지가 완전히 로드된 후에도 유지되도록 설정
+          img.fetchPriority = index < 6 ? 'high' : 'auto'; // 처음 6개는 우선순위 높게
+          
+          // 이미지 완전 로드 후 메모리 유지를 위한 이벤트 리스너
+          const markAsLoaded = () => {
+            // 이미지가 완전히 디코딩되었음을 표시
+            if (!img.complete) return;
+            // 이미지 요소에 데이터 속성 추가로 추적 가능하게
+            img.setAttribute('data-loaded', 'true');
+            resolve();
+          };
+          
+          img.onload = markAsLoaded;
+          img.onerror = () => resolve(); // 에러가 발생해도 resolve (빠른 진행을 위해)
+          
+          // src 설정 (네트워크 요청 시작)
           img.src = src;
           img.alt = `갤러리 이미지 ${index + 1}`;
           
+          // 이미지가 이미 캐시에 있으면 즉시 로드 완료
+          if (img.complete) {
+            markAsLoaded();
+          }
+          
           const item = document.createElement('div');
           item.className = 'item';
+          item.setAttribute('data-index', index);
           item.addEventListener('click', () => openLightbox(index));
           item.appendChild(img);
           galleryContainer.appendChild(item);
           
           // 모든 이미지가 표시되도록 hidden 클래스가 없어야 함 (초기화)
           item.classList.remove('hidden');
-          
-          // 이미지 로드 완료 시 resolve
-          img.onload = () => resolve();
-          img.onerror = () => resolve(); // 에러가 발생해도 resolve (빠른 진행을 위해)
         });
       });
 
-      // 모든 이미지가 로드될 때까지 대기
-      await Promise.all(imageLoadPromises);
+      // 모든 이미지가 로드될 때까지 대기 (타임아웃 추가)
+      await Promise.allSettled(imageLoadPromises);
 
       galleryPreloaded = true;
 
@@ -324,9 +355,15 @@
   function warmCacheGalleryImages(){
     // DOM 생성 프리로드가 이미 진행/완료 중이면 중복 프리로드 불필요
     if (galleryPreloadPromise || galleryPreloaded) return;
-    galleryManifest.forEach(name => {
+    galleryManifest.forEach((name, index) => {
       const img = new Image();
       img.decoding = 'async';
+      // 처음 몇 개는 높은 우선순위로 로드
+      img.fetchPriority = index < 3 ? 'high' : 'auto';
+      // 이미지 로드 완료 추적
+      img.onload = () => {
+        img.setAttribute('data-cached', 'true');
+      };
       img.src = galleryDir + name;
     });
   }
@@ -790,10 +827,17 @@
       rootMargin: '0px 0px -50px 0px'
     };
     
+    // 애니메이션이 적용된 요소 추적 (중복 애니메이션 방지)
+    const animatedSet = new Set();
+    
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.classList.add('animate');
+          // 이미 애니메이션이 적용된 요소는 스킵
+          if (!animatedSet.has(entry.target)) {
+            entry.target.classList.add('animate');
+            animatedSet.add(entry.target);
+          }
           
           // 갤러리 섹션에 도달했을 때 미리 로딩된 이미지들 표시
           if (entry.target.id === 'gallery') {
@@ -803,14 +847,17 @@
               requestAnimationFrame(() => {
                 const galleryItems = document.querySelectorAll('.gallery .item');
                 galleryItems.forEach((item) => {
-                  item.classList.add('animate');
+                  if (!item.classList.contains('animate')) {
+                    item.classList.add('animate');
+                  }
                 });
               });
             });
           }
-          
-          // 애니메이션 완료 후 관찰 중단 (성능 최적화)
-          observer.unobserve(entry.target);
+        } else {
+          // 뷰포트를 벗어났을 때: 이미지가 메모리에 유지되도록 하고
+          // 애니메이션은 제거하지 않음 (이미 보여진 상태 유지)
+          // 단, 클래스는 유지하여 재진입 시 부드럽게 처리
         }
       });
     }, observerOptions);
@@ -837,6 +884,58 @@
       });
       
       preloadObserver.observe(gallerySection);
+    }
+    
+    // 갤러리 이미지 개별 관찰 - 이미 로드된 이미지가 다시 보일 때 즉시 표시
+    const galleryImageObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target.querySelector('img');
+          if (img && img.getAttribute('data-loaded') === 'true') {
+            // 이미 로드된 이미지는 즉시 표시
+            entry.target.classList.add('animate');
+          } else if (img && !img.complete) {
+            // 아직 로드 중인 이미지는 완료 후 표시
+            const loadHandler = () => {
+              entry.target.classList.add('animate');
+              img.removeEventListener('load', loadHandler);
+            };
+            img.addEventListener('load', loadHandler);
+            // 이미 로드 중이면 즉시 확인
+            if (img.complete) {
+              loadHandler();
+            }
+          }
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '50px 0px 50px 0px'
+    });
+    
+    // 갤러리 이미지 관찰은 이미지가 생성된 후에 시작
+    const observeGalleryImages = () => {
+      const galleryItems = document.querySelectorAll('.gallery .item');
+      galleryItems.forEach(item => {
+        galleryImageObserver.observe(item);
+      });
+    };
+    
+    // 갤러리 로드 완료 후 관찰 시작
+    if (galleryPreloaded) {
+      observeGalleryImages();
+    } else {
+      // 갤러리 로드 대기 후 관찰 시작
+      const checkInterval = setInterval(() => {
+        const galleryItems = document.querySelectorAll('.gallery .item');
+        if (galleryItems.length > 0) {
+          observeGalleryImages();
+          clearInterval(checkInterval);
+        }
+      }, 100);
+      
+      // 5초 후 타임아웃
+      setTimeout(() => clearInterval(checkInterval), 5000);
     }
   }
 
