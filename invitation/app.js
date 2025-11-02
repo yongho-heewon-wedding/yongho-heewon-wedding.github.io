@@ -9,9 +9,25 @@
   function setHeroImage(src){
     const img = document.getElementById('heroImage');
     if (!img) return;
-    img.src = src;
+    
+    // Set event handlers before setting src to ensure they're called even if image is cached
+    img.onload = () => {
+      // 최소 1초는 보여주기 (애니메이션을 위한 시간)
+      setTimeout(() => {
+        hideLoadingScreen();
+      }, 1000);
+    };
+    
+    img.onerror = () => {
+      // Hide loading screen even if image fails to load
+      setTimeout(() => {
+        hideLoadingScreen();
+      }, 1000);
+    };
+    
     img.decoding = 'async';
     img.loading = 'eager';
+    img.src = src;
   }
 
   // Loading Screen Functions
@@ -118,11 +134,12 @@
       });
     });
   }
-
+  
   function hideLoadingScreen() {
     const loadingScreen = document.getElementById('loadingScreen');
     if (loadingScreen) {
       loadingScreen.classList.add('hidden');
+      // Remove from DOM after animation completes
       setTimeout(() => {
         if (loadingScreen.parentNode) {
           loadingScreen.parentNode.removeChild(loadingScreen);
@@ -443,18 +460,24 @@
     const list = document.getElementById('contactList');
     if (!list) return;
     const contacts = [
-      { label: '신랑', name: '송용호', phone: '010-0000-0000' },
-      { label: '신부', name: '배희원', phone: '010-0000-0000' },
-      { label: '신랑 아버지', name: '송재진', phone: '010-0000-0000' },
-      { label: '신랑 어머니', name: '이특재', phone: '010-0000-0000' },
-      { label: '신부 아버지', name: '배우철', phone: '010-0000-0000' },
-      { label: '신부 어머니', name: '이은영', phone: '010-0000-0000' },
-      { label: '', name: 'H스퀘어웨딩홀', phone: '02-000-0000' }
+      { label: '신랑', name: '송용호', phone: '010-7745-5399' },
+      { label: '신부', name: '배희원', phone: '010-3865-5728' },
+      { label: '신랑 아버지', name: '송재진', phone: '010-8346-5399' },
+      { label: '신랑 어머니', name: '이특재', phone: '010-2478-5399' },
+      { label: '신부 아버지', name: '배우철', phone: '010-7748-5728' },
+      { label: '신부 어머니', name: '이은영', phone: '010-2417-5728' },
+      { label: '', name: 'H스퀘어웨딩홀', phone: '02-2299-9999' }
     ];
+    const boldNames = ['송용호', '배희원', '송재진', '이특재', '배우철', '이은영'];
     for (const c of contacts){
       const li = document.createElement('li');
       const left = document.createElement('span');
-      left.textContent = `${c.label} ${c.name}`;
+      const shouldBold = boldNames.includes(c.name);
+      if (shouldBold) {
+        left.innerHTML = `${c.label} <strong>${c.name}</strong>`;
+      } else {
+        left.textContent = `${c.label} ${c.name}`;
+      }
       const right = document.createElement('a');
       right.href = `tel:${c.phone.replace(/[^0-9+]/g,'')}`;
       right.textContent = c.phone;
@@ -481,12 +504,22 @@
       { owner: '어머니 이은영', bank: '신한', number: '110-209-552110' }
     ];
     
+    const boldNames = ['송용호', '배희원', '송재진', '이특재', '배우철', '이은영'];
+    
     // 신랑측 계좌 목록 렌더링
     if (groomList) {
       for (const a of groomAccounts){
         const li = document.createElement('li');
         const span = document.createElement('span');
-        span.textContent = `${a.owner} · ${a.bank} ${a.number}`;
+        // owner에서 이름 추출 및 bold 처리
+        let ownerText = a.owner;
+        for (const name of boldNames) {
+          if (ownerText.includes(name)) {
+            ownerText = ownerText.replace(name, `<strong>${name}</strong>`);
+            break;
+          }
+        }
+        span.innerHTML = `${ownerText} · ${a.bank} ${a.number}`;
         const actions = document.createElement('div');
         actions.className = 'account-actions';
         const copyBtn = document.createElement('button');
@@ -505,7 +538,15 @@
       for (const a of brideAccounts){
         const li = document.createElement('li');
         const span = document.createElement('span');
-        span.textContent = `${a.owner} · ${a.bank} ${a.number}`;
+        // owner에서 이름 추출 및 bold 처리
+        let ownerText = a.owner;
+        for (const name of boldNames) {
+          if (ownerText.includes(name)) {
+            ownerText = ownerText.replace(name, `<strong>${name}</strong>`);
+            break;
+          }
+        }
+        span.innerHTML = `${ownerText} · ${a.bank} ${a.number}`;
         const actions = document.createElement('div');
         actions.className = 'account-actions';
         const copyBtn = document.createElement('button');
@@ -760,14 +801,14 @@
     // 갤러리 이미지를 미리 내려받아 캐시만 데워두기 (표시는 스크롤 시점에 수행)
     warmCacheGalleryImages();
     // bottom actions are static; nothing to init
-  });
-
-  // Hide loading screen when page is fully loaded
-  window.addEventListener('load', () => {
-    // 최소 1초는 보여주기 (애니메이션을 위한 시간)
+    
+    // Fallback: Hide loading screen after 3 seconds if hero image doesn't load
     setTimeout(() => {
-      hideLoadingScreen();
-    }, 1000);
+      const loadingScreen = document.getElementById('loadingScreen');
+      if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
+        hideLoadingScreen();
+      }
+    }, 3000);
   });
 })();
 
