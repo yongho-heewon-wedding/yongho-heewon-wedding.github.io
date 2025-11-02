@@ -107,14 +107,46 @@
       </section>
     </main>
 
+    <!-- Account Information Section -->
+    <section class="section account-section-wrapper scroll-animate delay-5" id="accountSection">
+      <h2 class="section-title">마음 전하실 곳</h2>
+      <p class="account-intro">
+        직접 축하를 전하지 못하는 분들을 위해<br>부득이하게 계좌번호를 기재하게 되었습니다.<br>넓은 마음으로 양해 부탁드립니다.
+      </p>
+      <div class="account-items">
+        <div class="account-item">
+          <button class="account-btn" id="groomAccountBtn" aria-expanded="false">
+            <span class="account-btn-label">신랑측</span>
+            <svg class="account-btn-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="account-slide-content" id="groomAccountContent">
+            <ul class="account-list" id="groomAccountList"></ul>
+          </div>
+        </div>
+        <div class="account-item">
+          <button class="account-btn" id="brideAccountBtn" aria-expanded="false">
+            <span class="account-btn-label">신부측</span>
+            <svg class="account-btn-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="account-slide-content" id="brideAccountContent">
+            <ul class="account-list" id="brideAccountList"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Bottom images -->
-    <div class="bottom-images scroll-animate delay-5">
+    <div class="bottom-images scroll-animate delay-6">
       <img src="./pictures/qna.png" alt="Q&A" class="qna-image" />
       <img src="./pictures/thanks.png" alt="감사 인사" class="thanks-image" />
     </div>
 
     <!-- Bottom actions (shown only when scrolled to bottom) -->
-    <div class="bottom-actions scroll-animate delay-6" id="bottomActions" aria-label="빠른 동작">
+    <div class="bottom-actions scroll-animate delay-7" id="bottomActions" aria-label="빠른 동작">
       <button class="fab" id="callBtn" aria-label="전화" aria-haspopup="dialog" aria-controls="callModal">
         <span class="icon">📞</span>
         <span class="label">전화</span>
@@ -123,14 +155,10 @@
         <span class="icon">🔗</span>
         <span class="label">공유</span>
       </button>
-      <button class="fab" id="giftBtn" aria-label="축의" aria-haspopup="dialog" aria-controls="giftModal">
-        <span class="icon">💝</span>
-        <span class="label">축의</span>
-      </button>
     </div>
 
     <!-- Bottom emblem image -->
-    <div class="bottom-emblem scroll-animate delay-7">
+    <div class="bottom-emblem scroll-animate delay-8">
       <img src="./pictures/bottom/bae_song.jpeg" alt="배 · 송 마크" />
       <p class="copyright">©BaeSong. All rights reserved.</p>
     </div>
@@ -158,15 +186,6 @@
       </div>
     </div>
 
-    <div class="modal" id="giftModal" aria-hidden="true" role="dialog" aria-modal="true">
-      <div class="modal-backdrop" data-close></div>
-      <div class="modal-dialog" role="document">
-        <button class="modal-close" data-close aria-label="닫기">✕</button>
-        <h3>축의</h3>
-        <p class="center">직접 축하를 전하지 못하는 분들을 위해<br>부득이하게 계좌번호를 기재하게 되었습니다.<br>넓은 마음으로 양해 부탁드립니다.</p>
-        <ul class="account-list" id="accountList"></ul>
-      </div>
-    </div>
 
     <!-- Lightbox Modal -->
     <div class="lightbox" id="lightbox">

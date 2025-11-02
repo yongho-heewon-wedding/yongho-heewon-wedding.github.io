@@ -306,7 +306,6 @@
     });
     document.getElementById('callBtn')?.addEventListener('click', ()=> openModal('callModal'));
     document.getElementById('shareBtn')?.addEventListener('click', ()=> openModal('shareModal'));
-    document.getElementById('giftBtn')?.addEventListener('click', ()=> openModal('giftModal'));
   }
 
   // Bottom actions are static at the end of the page now; no scroll logic needed
@@ -348,82 +347,99 @@
   }
 
   function renderAccounts(){
-    const list = document.getElementById('accountList');
-    if (!list) return;
+    const groomList = document.getElementById('groomAccountList');
+    const brideList = document.getElementById('brideAccountList');
     
     // 신랑측 계좌 정보
     const groomAccounts = [
-      { owner: '신랑 송용호', bank: '국민은행', number: '000000-00-000000' },
-      { owner: '신랑 아버지 송재진', bank: '하나은행', number: '000-000000-00000' },
-      { owner: '신랑 어머니 이특재', bank: '신한은행', number: '000-000-000000' }
+      { owner: '신랑 송용호', bank: '하나', number: '362-890-415-89807' },
+      { owner: '신랑 아버지 송재진', bank: '하나', number: '117-18-22335-2' },
+      { owner: '신랑 어머니 이특재', bank: '국민', number: '838-240-162265' }
     ];
     
     // 신부측 계좌 정보
     const brideAccounts = [
-      { owner: '신부 배희원', bank: '우리은행', number: '0000-000-000000' },
-      { owner: '신부 아버지 배우철', bank: '국민은행', number: '000000-00-000000' },
-      { owner: '신부 어머니 이은영', bank: '하나은행', number: '000-000000-00000' }
+      { owner: '신부 배희원', bank: '신한', number: '110-216-799581' },
+      { owner: '신부 아버지 배우철', bank: '농협', number: '352-1660-1174-93' },
+      { owner: '신부 어머니 이은영', bank: '신한', number: '110-209-552110' }
     ];
     
-    // 신랑측 섹션
-    const groomSection = document.createElement('div');
-    groomSection.className = 'account-section';
-    
-    const groomTitle = document.createElement('h4');
-    groomTitle.textContent = '신랑측';
-    groomTitle.className = 'account-section-title';
-    groomSection.appendChild(groomTitle);
-    
-    const groomList = document.createElement('ul');
-    groomList.className = 'account-sub-list';
-    
-    for (const a of groomAccounts){
-      const li = document.createElement('li');
-      const span = document.createElement('span');
-      span.textContent = `${a.owner} · ${a.bank} ${a.number}`;
-      const actions = document.createElement('div');
-      actions.className = 'account-actions';
-      const copyBtn = document.createElement('button');
-      copyBtn.className = 'btn btn-outline';
-      copyBtn.textContent = '복사';
-      copyBtn.addEventListener('click', ()=> copyToClipboard(a.number));
-      actions.appendChild(copyBtn);
-      li.appendChild(span); li.appendChild(actions);
-      groomList.appendChild(li);
+    // 신랑측 계좌 목록 렌더링
+    if (groomList) {
+      for (const a of groomAccounts){
+        const li = document.createElement('li');
+        const span = document.createElement('span');
+        span.textContent = `${a.owner} · ${a.bank} ${a.number}`;
+        const actions = document.createElement('div');
+        actions.className = 'account-actions';
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'btn btn-outline';
+        copyBtn.textContent = '복사';
+        copyBtn.addEventListener('click', ()=> copyToClipboard(a.number));
+        actions.appendChild(copyBtn);
+        li.appendChild(span);
+        li.appendChild(actions);
+        groomList.appendChild(li);
+      }
     }
     
-    groomSection.appendChild(groomList);
-    list.appendChild(groomSection);
+    // 신부측 계좌 목록 렌더링
+    if (brideList) {
+      for (const a of brideAccounts){
+        const li = document.createElement('li');
+        const span = document.createElement('span');
+        span.textContent = `${a.owner} · ${a.bank} ${a.number}`;
+        const actions = document.createElement('div');
+        actions.className = 'account-actions';
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'btn btn-outline';
+        copyBtn.textContent = '복사';
+        copyBtn.addEventListener('click', ()=> copyToClipboard(a.number));
+        actions.appendChild(copyBtn);
+        li.appendChild(span);
+        li.appendChild(actions);
+        brideList.appendChild(li);
+      }
+    }
+  }
+
+  function setupAccountSlides(){
+    const groomBtn = document.getElementById('groomAccountBtn');
+    const brideBtn = document.getElementById('brideAccountBtn');
+    const groomContent = document.getElementById('groomAccountContent');
+    const brideContent = document.getElementById('brideAccountContent');
     
-    // 신부측 섹션
-    const brideSection = document.createElement('div');
-    brideSection.className = 'account-section';
+    if (!groomBtn || !brideBtn || !groomContent || !brideContent) return;
     
-    const brideTitle = document.createElement('h4');
-    brideTitle.textContent = '신부측';
-    brideTitle.className = 'account-section-title';
-    brideSection.appendChild(brideTitle);
-    
-    const brideList = document.createElement('ul');
-    brideList.className = 'account-sub-list';
-    
-    for (const a of brideAccounts){
-      const li = document.createElement('li');
-      const span = document.createElement('span');
-      span.textContent = `${a.owner} · ${a.bank} ${a.number}`;
-      const actions = document.createElement('div');
-      actions.className = 'account-actions';
-      const copyBtn = document.createElement('button');
-      copyBtn.className = 'btn btn-outline';
-      copyBtn.textContent = '복사';
-      copyBtn.addEventListener('click', ()=> copyToClipboard(a.number));
-      actions.appendChild(copyBtn);
-      li.appendChild(span); li.appendChild(actions);
-      brideList.appendChild(li);
+    function toggleAccountSlide(targetBtn, targetContent, otherBtn, otherContent){
+      const isExpanded = targetContent.classList.contains('expanded');
+      
+      // 다른 슬라이드 닫기
+      if (otherContent.classList.contains('expanded')) {
+        otherContent.classList.remove('expanded');
+        otherBtn.classList.remove('active');
+        otherBtn.setAttribute('aria-expanded', 'false');
+      }
+      
+      // 현재 슬라이드 토글
+      if (isExpanded) {
+        targetContent.classList.remove('expanded');
+        targetBtn.classList.remove('active');
+        targetBtn.setAttribute('aria-expanded', 'false');
+      } else {
+        targetContent.classList.add('expanded');
+        targetBtn.classList.add('active');
+        targetBtn.setAttribute('aria-expanded', 'true');
+      }
     }
     
-    brideSection.appendChild(brideList);
-    list.appendChild(brideSection);
+    groomBtn.addEventListener('click', () => {
+      toggleAccountSlide(groomBtn, groomContent, brideBtn, brideContent);
+    });
+    
+    brideBtn.addEventListener('click', () => {
+      toggleAccountSlide(brideBtn, brideContent, groomBtn, groomContent);
+    });
   }
 
   function setupShare(){
@@ -564,6 +580,7 @@
     setupLightbox();
     renderContacts();
     renderAccounts();
+    setupAccountSlides();
     setupShare();
     setupScrollAnimation();
     // 갤러리 이미지를 미리 내려받아 캐시만 데워두기 (표시는 스크롤 시점에 수행)

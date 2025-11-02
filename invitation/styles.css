@@ -69,6 +69,7 @@ p.invitation-copy{margin:4px 0;text-align:center}
 .delay-5{transition-delay:0.5s}
 .delay-6{transition-delay:0.6s}
 .delay-7{transition-delay:0.7s}
+.delay-8{transition-delay:0.8s}
 
 /* Respect user's motion preferences */
 @media (prefers-reduced-motion: reduce) {
@@ -114,6 +115,20 @@ p.invitation-copy{margin:4px 0;text-align:center}
     padding: 0 12px;
   }
   
+  .account-items {
+    gap: 12px;
+  }
+  
+  .account-btn {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+  
+  .account-btn-icon {
+    width: 18px;
+    height: 18px;
+  }
+  
   .lightbox-nav {
     padding: 8px 12px;
     font-size: 20px;
@@ -132,6 +147,24 @@ p.invitation-copy{margin:4px 0;text-align:center}
     font-size: 20px;
   }
 }
+
+/* Account Section */
+.account-section-wrapper{padding-top:32px;padding-bottom:32px;background:var(--bg)}
+.account-intro{text-align:center;line-height:1.7;color:var(--muted);margin:16px auto 24px;max-width:680px;font-size:17px}
+.account-items{display:flex;flex-direction:column;gap:16px;max-width:680px;margin:24px auto}
+.account-item{width:100%}
+.account-btn{width:100%;padding:16px 20px;border:1px solid rgb(87,138,57);background:#fff;color:rgb(87,138,57);border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.3s ease;appearance:none;display:flex;align-items:center;justify-content:center;text-align:center;position:relative}
+.account-btn:hover{background:rgb(87,138,57);color:#fff}
+.account-btn.active{background:rgb(87,138,57);color:#fff}
+.account-btn.active .account-btn-icon{transform:rotate(180deg)}
+.account-btn-label{text-align:center}
+.account-btn-icon{position:absolute;right:20px;flex-shrink:0;transition:transform 0.3s ease;stroke-linecap:round;stroke-linejoin:round}
+.account-slide-content{max-height:0;overflow:hidden;transition:max-height 0.4s ease-out,opacity 0.3s ease-out;opacity:0;margin-top:0}
+.account-slide-content.expanded{max-height:1000px;opacity:1;margin-top:12px;transition:max-height 0.5s ease-in,opacity 0.4s ease-in}
+.account-slide-content .account-list{list-style:none;margin:0;padding:16px 20px;background:#fff;border:1px solid #eee;border-radius:8px}
+.account-slide-content .account-list .account-actions{flex-shrink:0}
+.account-slide-content .account-list .btn-outline{background:#fff;color:#666;border:1px solid #ccc;padding:8px 12px;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;transition:all 0.2s ease}
+.account-slide-content .account-list .btn-outline:hover{background:#f5f5f5;border-color:#999}
 
 /* Footer */
 /* Bottom actions placed at the end of the page */
@@ -156,7 +189,9 @@ p.invitation-copy{margin:4px 0;text-align:center}
 .modal-dialog{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:100%;max-width:720px;background:#fff;border-radius:16px 16px 0 0;padding:20px 16px;box-shadow:var(--shadow)}
 .modal-close{position:absolute;right:8px;top:8px;appearance:none;border:0;background:#fff;border-radius:999px;width:32px;height:32px}
 .contact-list,.account-list{list-style:none;margin:8px 0 0;padding:0}
-.contact-list li,.account-list li{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.contact-list li,.account-list li{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
+.account-list li:last-child{border-bottom:none}
+.account-list li span{flex:1;font-size:14px;line-height:1.5;color:#333}
 .contact-list a{color:var(--accent);text-decoration:none}
 .account-section{margin-bottom:16px}
 .account-section-title{font-size:16px;font-weight:600;margin:0 0 8px 0;color:#333;text-align:left}
@@ -234,6 +269,15 @@ p.invitation-copy{margin:4px 0;text-align:center}
   
   .calendar-image {
     max-width: 550px;
+  }
+  
+  .account-items {
+    max-width: 520px;
+    padding: 0;
+  }
+  
+  .account-intro {
+    max-width: 520px;
   }
   
   /* 모달도 PC에서 좁게 유지 */
