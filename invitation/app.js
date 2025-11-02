@@ -14,6 +14,123 @@
     img.loading = 'eager';
   }
 
+  // Loading Screen Functions
+  async function loadLoadingSVG() {
+    const loadingContent = document.getElementById('loadingContent');
+    if (!loadingContent) return;
+    
+    try {
+      const response = await fetch('./pictures/bae_song.svg');
+      const svgText = await response.text();
+      const parser = new DOMParser();
+      const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
+      const svgElement = svgDoc.documentElement;
+      
+      // SVG 요소에 클래스 추가
+      svgElement.classList.add('loading-svg');
+      
+      // viewBox가 없으면 기본값 설정
+      if (!svgElement.getAttribute('viewBox')) {
+        const width = svgElement.getAttribute('width') || '200';
+        const height = svgElement.getAttribute('height') || '200';
+        svgElement.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      }
+      
+      // SVG를 먼저 DOM에 추가
+      loadingContent.appendChild(svgElement);
+      
+      // DOM에 추가한 후 애니메이션 적용 (getBBox() 등이 제대로 작동하도록)
+      requestAnimationFrame(() => {
+        const strokeElements = svgElement.querySelectorAll('path, circle, ellipse, line, polyline, polygon, rect');
+        strokeElements.forEach((el, index) => {
+          if (el.getAttribute('stroke') || el.getAttribute('stroke-width')) {
+            let pathLength = 1000; // 기본값
+            if (el.tagName === 'path' && typeof el.getTotalLength === 'function') {
+              pathLength = el.getTotalLength();
+            } else {
+              try {
+                // 다른 요소들의 경우 대략적인 길이 계산
+                const bbox = el.getBBox();
+                pathLength = (bbox.width + bbox.height) * 2;
+              } catch (e) {
+                // getBBox() 실패 시 기본값 사용
+                pathLength = 1000;
+              }
+            }
+            el.style.strokeDasharray = pathLength;
+            el.style.strokeDashoffset = pathLength;
+            el.style.animation = `draw 2s ease-in-out forwards`;
+            el.style.animationDelay = `${index * 0.15}s`;
+          }
+        });
+      });
+
+      // Create loading text SVG
+      createLoadingText();
+    } catch (error) {
+      console.error('Failed to load loading SVG:', error);
+      // SVG 로드 실패 시 기본 텍스트 표시
+      loadingContent.innerHTML = '<div style="font-size: 24px; color: #666;">Loading...</div>';
+    }
+  }
+
+  function createLoadingText() {
+    const loadingTextWrapper = document.getElementById('loadingTextWrapper');
+    if (!loadingTextWrapper) return;
+
+    // Create SVG element for text
+    const textSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    textSvg.setAttribute('class', 'loading-text-svg');
+    textSvg.setAttribute('viewBox', '0 0 200 60');
+    textSvg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
+    // Create text element with stroke
+    const textElement = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    textElement.setAttribute('x', '100');
+    textElement.setAttribute('y', '35');
+    textElement.setAttribute('text-anchor', 'middle');
+    textElement.setAttribute('dominant-baseline', 'middle');
+    textElement.textContent = 'Loading...';
+
+    textSvg.appendChild(textElement);
+    loadingTextWrapper.appendChild(textSvg);
+
+    // Apply stroke animation after DOM insertion
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        let pathLength = 500; // 기본값
+        
+        try {
+          // 텍스트의 실제 길이를 계산하기 위해 경로 생성
+          const bbox = textElement.getBBox();
+          // 텍스트의 대략적인 stroke 길이 계산
+          // 각 글자마다 약간의 여유를 두고 계산
+          pathLength = bbox.width * 2.5 + 100;
+        } catch (e) {
+          pathLength = 500;
+        }
+        
+        // stroke-dasharray와 stroke-dashoffset 설정
+        textElement.style.strokeDasharray = pathLength;
+        textElement.style.strokeDashoffset = pathLength;
+        textElement.style.animation = 'draw 2s ease-in-out forwards';
+        textElement.style.animationDelay = '1s';
+      });
+    });
+  }
+
+  function hideLoadingScreen() {
+    const loadingScreen = document.getElementById('loadingScreen');
+    if (loadingScreen) {
+      loadingScreen.classList.add('hidden');
+      setTimeout(() => {
+        if (loadingScreen.parentNode) {
+          loadingScreen.parentNode.removeChild(loadingScreen);
+        }
+      }, 500); // CSS transition 시간과 맞춤
+    }
+  }
+
 
   // Map: show location image with click to open Naver map
   function setupMap(){
@@ -359,7 +476,7 @@
     
     // 신부측 계좌 정보
     const brideAccounts = [
-      { owner: '배희원', bank: '신한', number: '110-216-799581' },
+      { owner: '신부 배희원', bank: '신한', number: '110-216-799581' },
       { owner: '아버지 배우철', bank: '농협', number: '352-1660-1174-93' },
       { owner: '어머니 이은영', bank: '신한', number: '110-209-552110' }
     ];
@@ -626,6 +743,9 @@
 
   // bootstrap
   window.addEventListener('DOMContentLoaded', async ()=>{
+    // Load loading SVG first
+    await loadLoadingSVG();
+    
     // Directly set expected hero image path per project convention
     setHeroImage(headerDir + 'main_image.png?v=' + Date.now());
     setupMap();
@@ -640,6 +760,14 @@
     // 갤러리 이미지를 미리 내려받아 캐시만 데워두기 (표시는 스크롤 시점에 수행)
     warmCacheGalleryImages();
     // bottom actions are static; nothing to init
+  });
+
+  // Hide loading screen when page is fully loaded
+  window.addEventListener('load', () => {
+    // 최소 1초는 보여주기 (애니메이션을 위한 시간)
+    setTimeout(() => {
+      hideLoadingScreen();
+    }, 1000);
   });
 })();
 

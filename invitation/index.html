@@ -8,15 +8,18 @@
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yongho-heewon-wedding.github.io/invitation/">
     <meta property="og:title" content="송용호♥배희원 결혼합니다.">
     <meta property="og:description" content="2026년 01월 31일 토요일 오전 11시">
-    <meta property="og:image" content="./pictures/thumbnail/welcome.png">
+    <meta property="og:image" content="https://yongho-heewon-wedding.github.io/invitation/pictures/thumbnail/welcome.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:title" content="송용호♥배희원 결혼합니다.">
     <meta property="twitter:description" content="2026년 01월 31일 토요일 오전 11시">
-    <meta property="twitter:image" content="./pictures/thumbnail/welcome.png">
+    <meta property="twitter:image" content="https://yongho-heewon-wedding.github.io/invitation/pictures/thumbnail/welcome.png">
     
     <link rel="preload" as="image" href="./pictures/header/main_image.png" imagesrcset="">
     <!-- Preload a few top gallery images to warm the cache -->
@@ -28,6 +31,16 @@
     <link rel="stylesheet" href="./styles.css">
   </head>
   <body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+      <div class="loading-content" id="loadingContent">
+        <!-- SVG will be loaded here via JavaScript -->
+      </div>
+      <div class="loading-text-wrapper" id="loadingTextWrapper">
+        <!-- Loading text will be added here via JavaScript -->
+      </div>
+    </div>
+
     <main id="app">
       <!-- Header full-bleed image -->
       <section class="hero" id="hero" aria-label="메인 이미지">
@@ -146,7 +159,7 @@
     </div>
 
     <!-- Bottom actions (shown only when scrolled to bottom) -->
-    <div class="bottom-actions scroll-animate delay-7" id="bottomActions" aria-label="빠른 동작">
+    <div class="bottom-actions" id="bottomActions" aria-label="빠른 동작">
       <button class="fab" id="callBtn" aria-label="전화" aria-haspopup="dialog" aria-controls="callModal">
         <span class="icon">📞</span>
         <span class="label">전화</span>
@@ -158,7 +171,7 @@
     </div>
 
     <!-- Bottom emblem image -->
-    <div class="bottom-emblem scroll-animate delay-8">
+    <div class="bottom-emblem">
       <img src="./pictures/bottom/bae_song.jpeg" alt="배 · 송 마크" />
       <p class="copyright">©BaeSong. All rights reserved.</p>
     </div>
