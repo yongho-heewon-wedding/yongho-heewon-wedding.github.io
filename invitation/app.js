@@ -748,9 +748,84 @@
     const copyBtn = document.getElementById('copyLinkBtn');
     copyBtn?.addEventListener('click', ()=> copyToClipboard(location.href));
     const kakaoBtn = document.getElementById('kakaoShareBtn');
-    kakaoBtn?.addEventListener('click', ()=>{
-      alert('카카오 공유는 SDK 키 연동 후 가능합니다.');
+    kakaoBtn?.addEventListener('click', async ()=>{
+      const ready = await ensureKakaoReady();
+      if (!ready) {
+        alert('카카오 SDK 키를 설정해 주세요. 상단 meta[name="kakao-app-key"]에 키를 넣어주세요.');
+        return;
+      }
+      try {
+        const title = getMetaContent('property', 'og:title') || document.title;
+        const description = getMetaContent('property', 'og:description') || '';
+        const imageUrl = getMetaContent('property', 'og:image') || '';
+        const url = getMetaContent('property', 'og:url') || location.href;
+        Kakao.Share.sendDefault({
+          objectType: 'feed',
+          content: {
+            title,
+            description,
+            imageUrl,
+            link: { mobileWebUrl: url, webUrl: url }
+          },
+          buttons: [
+            {
+              title: '청첩장 열기',
+              link: { mobileWebUrl: url, webUrl: url }
+            }
+          ]
+        });
+      } catch (e) {
+        alert('카카오 공유에 실패했어요. 잠시 후 다시 시도해 주세요.');
+      }
     });
+    // 안내 문구 업데이트
+    const hint = document.querySelector('#shareModal .muted');
+    if (hint) {
+      ensureKakaoReady().then((ok)=>{
+        if (ok) hint.textContent = '카카오톡으로 공유할 수 있습니다.';
+      });
+    }
+  }
+
+  // Kakao SDK helpers
+  function getMetaContent(attr, name){
+    const el = document.querySelector(`meta[${attr}="${name}"]`);
+    return el && el.content ? el.content : '';
+  }
+
+  function getKakaoAppKey(){
+    if (window.KAKAO_JS_KEY && typeof window.KAKAO_JS_KEY === 'string') return window.KAKAO_JS_KEY;
+    const fromMeta = getMetaContent('name', 'kakao-app-key');
+    if (fromMeta && fromMeta !== 'YOUR_KAKAO_JS_KEY') return fromMeta;
+    return '';
+  }
+
+  let kakaoLoadingPromise = null;
+  function loadKakaoSDK(){
+    if (window.Kakao) return Promise.resolve(true);
+    if (kakaoLoadingPromise) return kakaoLoadingPromise;
+    kakaoLoadingPromise = new Promise((resolve)=>{
+      const s = document.createElement('script');
+      s.src = 'https://developers.kakao.com/sdk/js/kakao.min.js';
+      s.async = true;
+      s.onload = () => resolve(true);
+      s.onerror = () => resolve(false);
+      document.head.appendChild(s);
+    });
+    return kakaoLoadingPromise;
+  }
+
+  async function ensureKakaoReady(){
+    const loaded = await loadKakaoSDK();
+    if (!loaded || !window.Kakao) return false;
+    const key = getKakaoAppKey();
+    if (!key) return false;
+    try {
+      if (!Kakao.isInitialized()) Kakao.init(key);
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   async function copyToClipboard(text){
