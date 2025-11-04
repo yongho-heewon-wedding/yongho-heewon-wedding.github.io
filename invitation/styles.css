@@ -337,6 +337,15 @@ p.invitation-copy{margin:4px 0;text-align:center}
   }
   
   /* Constrain bottom sections to match content width */
+  /* Account section lives outside #app; constrain it to match */
+  .account-section-wrapper {
+    width: 100%;
+    max-width: 600px; /* match #app width for visual alignment */
+    margin-left: auto;
+    margin-right: auto;
+    background: var(--bg);
+  }
+
   .bottom-images,
   .bottom-actions,
   .bottom-emblem {
