@@ -317,7 +317,7 @@
           img.decoding = 'async';
           // 이미지가 완전히 로드된 후에도 유지되도록 설정
           img.fetchPriority = index < 6 ? 'high' : 'auto'; // 처음 6개는 우선순위 높게
-          
+
           // 이미지 완전 로드 후 메모리 유지를 위한 이벤트 리스너
           const markAsLoaded = () => {
             // 이미지가 완전히 디코딩되었음을 표시
@@ -326,26 +326,30 @@
             img.setAttribute('data-loaded', 'true');
             resolve();
           };
-          
+
           img.onload = markAsLoaded;
           img.onerror = () => resolve(); // 에러가 발생해도 resolve (빠른 진행을 위해)
-          
-          // src 설정 (네트워크 요청 시작)
-          img.src = src;
+
+          // 12번째 이미지는 썸네일 사용
+          if (index === 11) {
+            img.src = galleryDir + '12_thumbnail.jpg';
+          } else {
+            img.src = src;
+          }
           img.alt = `갤러리 이미지 ${index + 1}`;
-          
+
           // 이미지가 이미 캐시에 있으면 즉시 로드 완료
           if (img.complete) {
             markAsLoaded();
           }
-          
+
           const item = document.createElement('div');
           item.className = 'item';
           item.setAttribute('data-index', index);
           item.addEventListener('click', () => openLightbox(index));
           item.appendChild(img);
           galleryContainer.appendChild(item);
-          
+
           // 모든 이미지가 표시되도록 hidden 클래스가 없어야 함 (초기화)
           item.classList.remove('hidden');
         });
@@ -381,7 +385,12 @@
       img.onload = () => {
         img.setAttribute('data-cached', 'true');
       };
-      img.src = galleryDir + name + imageExt;
+      // 12번째 이미지는 썸네일 사용
+      if (index === 11) {
+        img.src = galleryDir + '12_thumbnail.jpg';
+      } else {
+        img.src = galleryDir + name + imageExt;
+      }
     });
   }
 
