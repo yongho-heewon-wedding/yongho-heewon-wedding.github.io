@@ -1,9 +1,21 @@
 (function(){
+  // WebP 지원 확인
+  const supportsWebP = (() => {
+    const canvas = document.createElement('canvas');
+    if (canvas.getContext && canvas.getContext('2d')) {
+      return canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+    }
+    return false;
+  })();
+
+  const imageExt = supportsWebP ? '.webp' : '.jpg';
+  const headerImageExt = supportsWebP ? '.webp' : '.png';
+
   const headerDir = './pictures/header/';
   const galleryDir = './pictures/gallery/';
   const galleryManifest = [
-  '01.jpg','02.jpg','03.jpg','04.jpg','05.jpg',
-  '06.jpg','07.jpg','08.jpg','09.jpg','10.jpg','11.jpg','12.jpg'
+  '01','02','03','04','05',
+  '06','07','08','09','10','11','12'
   ];
 
   // Resource loading tracker
@@ -290,7 +302,7 @@
       galleryContainer.innerHTML = '<div class="gallery-loading">사진을 불러오는 중...</div>';
 
       // Build from manifest without any probing
-      galleryImages = galleryManifest.map(name => galleryDir + name);
+      galleryImages = galleryManifest.map(name => galleryDir + name + imageExt);
 
       // 갤러리 컨테이너 초기화
       galleryContainer.innerHTML = '';
@@ -369,7 +381,7 @@
       img.onload = () => {
         img.setAttribute('data-cached', 'true');
       };
-      img.src = galleryDir + name;
+      img.src = galleryDir + name + imageExt;
     });
   }
 
@@ -1022,14 +1034,14 @@
   // Start tracking all resources
   function startResourceTracking() {
     resourceTracker.startTime = Date.now();
-    
+
     // Hero 이미지
-    const heroImageSrc = headerDir + 'main_image.png';
+    const heroImageSrc = headerDir + 'main_image' + headerImageExt;
     trackResource(heroImageSrc, 'Hero Image');
-    
+
     // 갤러리 이미지들 (12개)
     galleryManifest.forEach(name => {
-      trackResource(galleryDir + name, `Gallery ${name}`);
+      trackResource(galleryDir + name + imageExt, `Gallery ${name}`);
     });
     
     // 페이지 내 이미지들
@@ -1133,7 +1145,7 @@
     startResourceTracking();
     
     // Directly set expected hero image path per project convention
-    setHeroImage(headerDir + 'main_image.png?v=' + Date.now());
+    setHeroImage(headerDir + 'main_image' + headerImageExt + '?v=' + Date.now());
     setupMap();
     // buildGallery()는 스크롤 애니메이션에서 처리하므로 여기서는 제거
     setupModals();

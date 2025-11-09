@@ -1,0 +1,12 @@
+{
+  "name": "wedding-invitation",
+  "version": "1.0.0",
+  "description": "Wedding invitation website with optimized images",
+  "scripts": {
+    "optimize-test": "node optimize-images.js --test",
+    "optimize": "node optimize-images.js"
+  },
+  "dependencies": {
+    "sharp": "^0.33.0"
+  }
+}
