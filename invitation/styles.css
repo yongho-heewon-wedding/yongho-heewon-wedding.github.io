@@ -84,6 +84,18 @@ p.invitation-copy{margin:4px 0;text-align:center}
   image-rendering:-webkit-optimize-contrast;
   image-rendering:crisp-edges;
 }
+/* 특정 이미지들은 중간 또는 아래쪽도 보이도록 조정 */
+.gallery .item[data-index="2"] img,
+.gallery .item[data-index="8"] img,
+.gallery .item[data-index="10"] img{
+  object-position:center 70%;
+}
+.gallery .item[data-index="5"] img{
+  object-position:center 30%;
+}
+.gallery .item[data-index="11"] img{
+  object-position:center 10%;
+}
 .gallery .item.hidden{display:none}
 
 /* Gallery loading state */
