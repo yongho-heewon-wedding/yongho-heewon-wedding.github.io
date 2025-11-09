@@ -219,7 +219,8 @@
 
       // Create location image
       const mapImage = document.createElement('img');
-      mapImage.loading = 'lazy';
+      // Remove lazy loading for location image - it's important info that should load immediately
+      mapImage.loading = 'eager';
       mapImage.decoding = 'async';
       mapImage.alt = 'H스퀘어웨딩홀 위치';
       mapImage.style.width = '100%';
@@ -229,13 +230,16 @@
 
       // Set up onload handler BEFORE setting src
       mapImage.onload = () => {
+        console.log('Location image loaded successfully');
         mapContainer.innerHTML = '';
         mapContainer.appendChild(mapImage);
         mapImage.setAttribute('data-loaded', 'true');
       };
 
       // Set up onerror handler BEFORE setting src
-      mapImage.onerror = () => {
+      mapImage.onerror = (error) => {
+        console.error('Location image failed to load:', error);
+        console.error('Attempted path:', mapImage.src);
         // Fallback: show placeholder with click to open map
         mapContainer.innerHTML = `
           <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; background: transparent; color: #666; cursor: pointer;" onclick="window.open('${naverUrl}', '_blank')">
@@ -255,6 +259,7 @@
 
       // Set src LAST to start loading - this ensures handlers are ready
       mapImage.src = './pictures/location.png';
+      console.log('Location image src set to:', mapImage.src);
     }
   }
 
