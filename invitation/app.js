@@ -311,9 +311,9 @@
       const imageLoadPromises = galleryImages.map((src, index) => {
         return new Promise((resolve) => {
           const img = new Image();
-          // 성능 최적화: lazy loading 사용하여 메모리 효율성 향상
-          // 하지만 네트워크 캐시는 미리 준비되므로 빠르게 로드됨
-          img.loading = 'lazy';
+          // 성능 최적화: eager loading 사용하여 이미지 메모리 유지
+          // 스크롤 후 다시 돌아와도 재로드되지 않음
+          img.loading = 'eager';
           img.decoding = 'async';
           // 이미지가 완전히 로드된 후에도 유지되도록 설정
           img.fetchPriority = index < 6 ? 'high' : 'auto'; // 처음 6개는 우선순위 높게
