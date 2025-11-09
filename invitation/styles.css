@@ -4,6 +4,7 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:
 img{display:block;max-width:100%;height:auto}
 .section{padding:32px 20px}
 #invitation{padding-top:48px}
+#gallery{padding-left:0;padding-right:0}
 .section-title{font-size:17px;letter-spacing:.24em;text-indent:.24em;text-align:center;margin:0 auto 16px;font-weight:400;border-top:none;border-bottom:none;padding:8px 0;color:rgb(87,138,57);display:block;width:fit-content;max-width:60%}
 .section-lead{text-align:center;margin:8px auto;font-size:17px}
 .date-place scroll-animate{margin:0 0 16px;text-align:center}
@@ -63,7 +64,7 @@ p.invitation-copy{margin:4px 0;text-align:center}
 .btn-outline{background:#fff;color:#666;border:1px solid #ccc;padding:8px;display:flex;align-items:center;justify-content:center}
 
 /* Gallery */
-.gallery{display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;max-width:720px;margin:0 auto;padding:0 16px}
+.gallery{display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;max-width:100%;margin:0 auto;padding:0 16px}
 .gallery .item{border-radius:3px;overflow:hidden;box-shadow:var(--shadow);transition:transform 0.2s ease;cursor:pointer;aspect-ratio:1;opacity:0;transform:translateY(30px);transition:opacity 0.6s ease, transform 0.6s ease}
 .gallery .item.animate{opacity:1;transform:translateY(0)}
 .gallery .item:hover{transform:translateY(-2px)}
@@ -120,16 +121,17 @@ p.invitation-copy{margin:4px 0;text-align:center}
 .more-button:hover{background:rgb(87,138,57);color:#fff}
 
 /* Lightbox Modal */
-.lightbox{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;z-index:1000;align-items:center;justify-content:center}
+.lightbox{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.95);display:none;z-index:1000;align-items:center;justify-content:center}
 .lightbox.active{display:flex}
-.lightbox-content{position:relative;max-width:90%;max-height:90%;display:flex;align-items:center;justify-content:center}
+.lightbox-content{position:relative;max-width:98%;max-height:98%;display:flex;align-items:center;justify-content:center}
 .lightbox img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
-.lightbox-close{position:absolute;top:-40px;right:0;background:none;border:none;color:#fff;font-size:24px;cursor:pointer;padding:8px}
-.lightbox-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.2);border:none;color:#fff;font-size:24px;cursor:pointer;padding:12px 16px;border-radius:50%;transition:background 0.2s ease}
-.lightbox-nav:hover{background:rgba(255,255,255,0.3)}
-.lightbox-prev{left:20px}
-.lightbox-next{right:20px}
-.lightbox-counter{position:absolute;bottom:-40px;left:50%;transform:translateX(-50%);color:#fff;font-size:14px;background:rgba(0,0,0,0.5);padding:8px 16px;border-radius:20px}
+.lightbox-close{position:absolute;top:10px;right:10px;background:none;border:none;color:#888;font-size:28px;cursor:pointer;padding:8px;width:auto;height:auto;display:flex;align-items:center;justify-content:center;transition:color 0.2s ease}
+.lightbox-close:hover{color:#555}
+.lightbox-nav{position:absolute;top:50%;transform:translateY(-50%);background:none;border:none;color:#888;font-size:32px;cursor:pointer;padding:12px 16px;transition:color 0.2s ease}
+.lightbox-nav:hover{color:#555}
+.lightbox-prev{left:10px}
+.lightbox-next{right:10px}
+.lightbox-counter{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);color:#333;font-size:14px;background:rgba(255,255,255,0.8);padding:8px 16px;border-radius:20px}
 
 /* Mobile responsive adjustments */
 @media (max-width: 480px) {
@@ -165,20 +167,21 @@ p.invitation-copy{margin:4px 0;text-align:center}
   
   .lightbox-nav {
     padding: 8px 12px;
-    font-size: 20px;
+    font-size: 28px;
   }
-  
+
   .lightbox-prev {
-    left: 10px;
+    left: 5px;
   }
-  
+
   .lightbox-next {
-    right: 10px;
+    right: 5px;
   }
-  
+
   .lightbox-close {
-    top: -35px;
-    font-size: 20px;
+    top: 5px;
+    right: 5px;
+    font-size: 24px;
   }
 }
 
@@ -286,7 +289,7 @@ p.invitation-copy{margin:4px 0;text-align:center}
   
   /* 갤러리도 PC에서 좁게 유지 */
   .gallery {
-    max-width: 520px;
+    max-width: 100%;
     padding: 0 16px;
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
@@ -382,6 +385,16 @@ p.invitation-copy{margin:4px 0;text-align:center}
     background: var(--bg);
     padding: 20px 0;
     margin: 0 auto;
+  }
+
+  /* PC에서 라이트박스 이미지 크기 제한 */
+  .lightbox-content {
+    max-width: 600px;
+    max-height: 95vh;
+  }
+
+  .lightbox img {
+    max-height: 95vh;
   }
 }
 
