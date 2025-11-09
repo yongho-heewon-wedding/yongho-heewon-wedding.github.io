@@ -214,35 +214,27 @@
     }
     
     if (mapContainer) {
+      // Add loading placeholder first
+      mapContainer.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; background: transparent; color: #666; font-size: 14px;">위치 이미지를 불러오는 중...</div>';
+
       // Create location image
       const mapImage = document.createElement('img');
       mapImage.loading = 'lazy';
       mapImage.decoding = 'async';
-      mapImage.src = './pictures/location.png';
       mapImage.alt = 'H스퀘어웨딩홀 위치';
       mapImage.style.width = '100%';
       mapImage.style.height = '100%';
       mapImage.style.objectFit = 'contain';
       mapImage.style.cursor = 'pointer';
-      // 이미지 로드 완료 추적
-      mapImage.onload = () => {
-        mapImage.setAttribute('data-loaded', 'true');
-      };
-      
-      // Add click handler to open Naver map
-      mapImage.addEventListener('click', () => {
-        window.open(naverUrl, '_blank');
-      });
-      
-      // Add loading placeholder
-      mapContainer.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; background: transparent; color: #666; font-size: 14px;">위치 이미지를 불러오는 중...</div>';
-      
-      // Load map image
+
+      // Set up onload handler BEFORE setting src
       mapImage.onload = () => {
         mapContainer.innerHTML = '';
         mapContainer.appendChild(mapImage);
+        mapImage.setAttribute('data-loaded', 'true');
       };
-      
+
+      // Set up onerror handler BEFORE setting src
       mapImage.onerror = () => {
         // Fallback: show placeholder with click to open map
         mapContainer.innerHTML = `
@@ -255,6 +247,14 @@
           </div>
         `;
       };
+
+      // Add click handler to open Naver map
+      mapImage.addEventListener('click', () => {
+        window.open(naverUrl, '_blank');
+      });
+
+      // Set src LAST to start loading - this ensures handlers are ready
+      mapImage.src = './pictures/location.png';
     }
   }
 
