@@ -534,7 +534,7 @@
       if (closeBtn) closeBtn.addEventListener('click', ()=> closeModal(m));
     });
     document.getElementById('callBtn')?.addEventListener('click', ()=> openModal('callModal'));
-    document.getElementById('shareBtn')?.addEventListener('click', ()=> openModal('shareModal'));
+    document.getElementById('shareBtn')?.addEventListener('click', ()=> copyToClipboard(location.href));
   }
 
   // Bottom actions are static at the end of the page now; no scroll logic needed
