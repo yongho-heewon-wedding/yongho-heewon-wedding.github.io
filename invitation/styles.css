@@ -1,6 +1,6 @@
 :root{--bg:#ffffff;--text:#222;--muted:#666;--accent:#0a7cff;--border:#eee;--shadow:0 6px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Gowun Dodum',sans-serif}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Gowun Dodum',sans-serif;touch-action:manipulation}
 img{display:block;max-width:100%;height:auto}
 .section{padding:32px 20px}
 #invitation{padding-top:48px}

@@ -1,4 +1,27 @@
 (function(){
+  // Safari에서 확대/축소 방지
+  document.addEventListener('gesturestart', function(e) {
+    e.preventDefault();
+  });
+
+  document.addEventListener('gesturechange', function(e) {
+    e.preventDefault();
+  });
+
+  document.addEventListener('gestureend', function(e) {
+    e.preventDefault();
+  });
+
+  // 더블탭 줌 방지
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', function(e) {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      e.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, false);
+
   // WebP 지원 확인
   const supportsWebP = (() => {
     const canvas = document.createElement('canvas');
